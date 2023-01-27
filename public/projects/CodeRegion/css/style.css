@@ -1,0 +1,17 @@
+﻿#CodeLadder
+{
+    position:absolute;
+    left:4px;
+    width:640px;
+    height:480px;
+}
+
+#Configurator
+{
+    position:absolute;
+    left:508px;
+    width:500px;
+    height:600px;
+    background:#eee;
+    color:#000;
+}

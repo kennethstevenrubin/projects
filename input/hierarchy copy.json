@@ -1,0 +1,282 @@
+{
+  "WatchList": {
+    "tagName": "WatchList",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "WatchListWrapper",
+        "children": []
+      }
+    ]
+  },
+  "WatchListWrapper": {
+    "tagName": "WatchListWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "ShellCanvasGridHeader",
+        "children": []
+      },
+      {
+        "tagName": "LiquidityMonitorGridWrapper",
+        "children": []
+      },
+      {
+        "tagName": "WatchListGridFooter",
+        "children": []
+      }
+    ]
+  },
+  "ShellCanvasGridHeader": {
+    "tagName": "ShellCanvasGridHeader",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "WatchListTitleComponent",
+        "children": []
+      }
+    ]
+  },
+  "WatchListTitleComponent": {
+    "tagName": "WatchListTitleComponent",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "StagedOrderTitleComponentWrapper",
+        "children": []
+      }
+    ]
+  },
+  "LiquidityMonitorGridWrapper": {
+    "tagName": "LiquidityMonitorGridWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "WatchListHeaderContext",
+        "children": []
+      }
+    ]
+  },
+  "WatchListHeaderContext": {
+    "tagName": "WatchListHeaderContext",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "Grid",
+        "children": []
+      }
+    ]
+  },
+  "Grid": {
+    "tagName": "Grid",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "WatchListGridFooter": {
+    "tagName": "WatchListGridFooter",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "ActivityGridFooterWrapper",
+        "children": []
+      }
+    ]
+  },
+  "ActivityGridFooterWrapper": {
+    "tagName": "ActivityGridFooterWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "WatchListFooterFilters",
+        "children": []
+      },
+      {
+        "tagName": "FooterButtons",
+        "children": []
+      }
+    ]
+  },
+  "WatchListFooterFilters": {
+    "tagName": "WatchListFooterFilters",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "FooterFilterWrapper",
+        "children": []
+      }
+    ]
+  },
+  "FooterButtons": {
+    "tagName": "FooterButtons",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "FooterFilterWrapper": {
+    "tagName": "FooterFilterWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "Total ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Cloud ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Live ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Not In Cloud ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Failed ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Positions ToggleFilterItem",
+        "children": []
+      },
+      {
+        "tagName": "Active ToggleFilterItem",
+        "children": []
+      }
+    ]
+  },
+  "Total ToggleFilterItem": {
+    "tagName": "Total ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Cloud ToggleFilterItem": {
+    "tagName": "Cloud ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Live ToggleFilterItem": {
+    "tagName": "Live ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Not In Cloud ToggleFilterItem": {
+    "tagName": "Not In Cloud ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Failed ToggleFilterItem": {
+    "tagName": "Failed ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Positions ToggleFilterItem": {
+    "tagName": "Positions ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "Active ToggleFilterItem": {
+    "tagName": "Active ToggleFilterItem",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "StagedOrderTitleComponentWrapper": {
+    "tagName": "StagedOrderTitleComponentWrapper",
+    "cardinality": 1,
+    "notes": "test",
+    "children": [
+      {
+        "tagName": "BondSearchContainer",
+        "children": []
+      },
+      {
+        "tagName": "PasteButton",
+        "children": []
+      },
+      {
+        "tagName": "StagedOrderNewListNameWrapper",
+        "children": []
+      },
+      {
+        "tagName": "StagedOrderTitleDropdownWrapper",
+        "children": []
+      }
+    ]
+  },
+  "BondSearchContainer": {
+    "tagName": "BondSearchContainer",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "PasteButton": {
+    "tagName": "PasteButton",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "StagedOrderNewListNameWrapper": {
+    "tagName": "StagedOrderNewListNameWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "StagedOrderNewListNameInput",
+        "children": []
+      }
+    ]
+  },
+  "StagedOrderNewListNameInput": {
+    "tagName": "StagedOrderNewListNameInput",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  },
+  "StagedOrderTitleDropdownWrapper": {
+    "tagName": "StagedOrderTitleDropdownWrapper",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "TicketLabel",
+        "children": []
+      }
+    ]
+  },
+  "TicketLabel": {
+    "tagName": "TicketLabel",
+    "cardinality": 1,
+    "notes": "",
+    "children": [
+      {
+        "tagName": "LabelSelect",
+        "children": []
+      }
+    ]
+  },
+  "LabelSelect": {
+    "tagName": "LabelSelect",
+    "cardinality": 1,
+    "notes": "",
+    "children": []
+  }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html />
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Movie Testbed</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js"
+        data-main="source/Main"></script>
+</head>
+<body>
+    <div id="MovieDiv">
+        <h1>Movie</h1>
+        <h3>Source</h3>
+        <a href="http://165.225.132.154:/Movie/source/Movie.js">Movie.js</a><br/>
+        <a href="http://165.225.132.154:/Movie/source/prototypes.js">prototypes.js</a><br/>
+        <a href="http://165.225.132.154:/Movie/source/Region.js">Region.js</a><br/>
+        <a href="http://165.225.132.154:/Movie/source/RegionButton.js">RegionButton.js</a><br/>
+        <a href="http://165.225.132.154:/Movie/source/RegionButtonPinched.js">RegionButtonPinched.js</a><br/>
+        Note: Support files are included for comlpeteness and are: 1) not necessary in the main body of code, and 2) the reference to RegionButtonPinched in Movie.js will have to be updated to incorporate directly anyway.
+        <h3>Use</h3>
+        require(["Movie"],<br/>
+        &nbsp;&nbsp;function (Movie) {<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;// Allocate new Movie.<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;// Only the first parameter is mandatory.<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;new Movie(jParent,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strTitle,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arrayParagraphs,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strButtonCaptionInput,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dTop,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dOverlayOpacity,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strBackColor,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strTextColor,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dRequiredWidth,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dRequiredHeight,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strFontFamily,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dFontSize,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dTitleFontSize,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dButtonFontSize,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dLineHeightGap,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dParagraphSpacingGap,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dCornerRadius,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dRightGap,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dBottomGap,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dButtonHeight,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dTitleX,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dTitleY,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dParagraphStartY,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dWidthParagraphPadding,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dLineStartX);<br/>
+        &nbsp;&nbsp;});<br/>
+        <br/>
+        <h3>Example</h3>
+        Specify valid values for any of the fields below to modify the behavior of the Movie control.<br/>
+        Then press the "Create movie" button to create an instance.<br/>
+        <br/>
+        Note: Clicking anywhere dismisses the movie once it is running.<br/>
+        <h2>title</h2><input id="TitleInput" value="A few last hints:" class="wide"/><br/>
+        Title of dialog.  Displays at the top of the dialog and in a slightly larger font.
+        <h2>paragraphs</h2><input id="Paragraph0Input" value='To create goals, click and drag plum icons from the top of the plan dashboard to the "Dreams & Goals" pane.' class="wide"/><br/>
+        <input id="Paragraph1Input" value="Drag the ends of bars on the timeline to make events start sooner or run longer." class="wide"/><br/>
+        <input id="Paragraph2Input" value="Click the names of the plan objects to view and edit their contents." class="wide"/><br/>
+        Type the paragraphs displayed as the contents of the dialog.
+        <h2>button caption</h2><input id="ButtonCaptionInput" value="Let's Go!" class="wide"/><br/>
+        The caption of the "dismiss" button.
+        <h2>top (pixels, 0..1000)</h2><input id="TopInput" type="number" value="128" max="1000" min="0" step="1" /><br/>
+        The y-coordinate of the top of the Movie canvas.
+        <h2>overlay opacity (0..1)</h2><input id="OverlayOpacityInput" type="number" value="0.25" max="1" min="0" step="0.01" /><br/>
+        The darkness of the overlay--indicating that the background is blocked.
+        <h2>back color (r,g,b)</h2><input id="BackColorInput" value="255,255,255" /><br/>
+        The color of the background.
+        <h2>text color (r,g,b)</h2><input id="TextColorInput" value="64,64,64" /><br/>
+        The color of the text.
+        <h2>required width (pixels, 50..1000)</h2><input id="RequiredWidthInput" type="number" value="480" max="1000" min="50" step="1" /><br/>
+        The width of the movie.
+        <h2>required height (pixels, 50..1000)</h2><input id="RequiredHeightInput" type="number" value="420" max="1000" min="50" step="1" /><br/>
+        The height of the movie.
+        <h2>font family</h2><input id="FontFamilyInput" value="Arial" /><br/>
+        The font family for the text.
+        <h2>font size (pixels, 1..100)</h2><input id="FontSizeInput" type="number" value="17" max="100" min="1" step="1" /><br/>
+        The font size for the text.
+        <h2>title font size (pixels, 1..100)</h2><input id="TitleFontSizeInput" type="number" value="27" max="100" min="1" step="1" /><br/>
+        The font size for the title.
+        <h2>button font size (pixels, 1..100)</h2><input id="ButtonFontSizeInput" type="number" value="17" max="100" min="1" step="1" /><br/>
+        The font size for the button.
+        <h2>line height (pixels, 1..100)</h2><input id="LineHeightInput" type="number" value="20" max="100" min="1" step="1" /><br/>
+        The number of pixels separating successive rows of text.
+        <h2>paragraph spacing gap (pixels, 1..100)</h2><input id="ParagraphSpacingGapInput" type="number" value="30" max="100" min="1" step="1" /><br/>
+        The number of pixels separating successive paragraphs of text.
+        <h2>corner radius (pixels, 0..100)</h2><input id="CornerRadiusInput" type="number" value="20" max="100" min="0" step="1" /><br/>
+        The roundness of the corners of the background and also the border spacing for the paragraphs and button.
+        <h2>right gap (pixels, 0..500)</h2><input id="RightGapInput" type="number" value="150" max="500" min="0" step="1" /><br/>
+        The spacing between the left of the button and the right size of the dialog.
+        <h2>bottom gap (pixels, 0..500)</h2><input id="BottomGapInput" type="number" value="50" max="500" min="0" step="1" /><br/>
+        The spacing between the top of the button and the top of the bottom border of the dialog.
+        <h2>button height (pixels, 1..100)</h2><input id="ButtonHeightInput" type="number" value="32" max="100" min="1" step="1" /><br/>
+        The height of the button (in pixels).
+        <h2>title x (pixels, 1..100)</h2><input id="TitleXInput" type="number" value="20" max="100" min="1" step="1" /><br/>
+        The x-coordinate of the title left.
+        <h2>title y (pixels, 1..100)</h2><input id="TitleYInput" type="number" value="30" max="100" min="1" step="1" /><br/>
+        The y-coordinate of the title top.
+        <h2>paragraph start y (pixels, 1..1000)</h2><input id="ParagraphStartYInput" type="number" value="100" max="1000" min="1" step="1" /><br/>
+        The starting y-coordinate of the paragraphs.
+        <h2>width paragraph padding (pixels, 1..100)</h2><input id="WidthParagraphPaddingInput" type="number" value="50" max="100" min="1" step="1" /><br/>
+        The padding for the line-splitting paragraph operations.
+        <h2>line start x (pixels, 1..100)</h2><input id="ButtonHeightInput" type="number" value="30" max="100" min="1" step="1" /><br/>
+        he starting x-coordinate of the paragraph text output.
+        <br/>
+        <br/>
+        <button id="MovieButton">Create movie</button>
+    </div>
+</body>
+</html>

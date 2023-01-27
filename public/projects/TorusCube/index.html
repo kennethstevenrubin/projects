@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+	<head>
+    	<!-- Title of application. -->
+		<title>
+            Boiler plate for DevStudio 2012 three.js projects.
+		</title>
+
+    	<!-- Page in variable width 8-bit encoding (standard). -->
+		<meta 
+            charset="utf-8">
+
+    	<!-- Instruct mobile devices to render entire page just as a desktop browser would (i.e. no scrollbars). -->
+		<meta 
+            name="viewport" 
+            content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+    	<!-- Link to css style-sheet. -->
+		<link  
+            href="/projects/TorusCube/css/main.css" 
+            rel="stylesheet"/>
+			
+    	<!-- jQuery! -->
+        <script 
+            type="text/javascript" 
+            src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+        </script>
+
+    	<!-- Three.js wraps WebGL rendering. -->
+		<script 
+            src="/projects/TorusCube/vendor/three.js/Three.js">
+		</script>
+
+    	<!-- Detector is used to polyfill WebGL renderer. -->
+		<script 
+            src="/projects/TorusCube/vendor/three.js/Detector.js">
+		</script>
+
+    	<!-- Stats for use stat output, e.g. FPS & MSPF. -->
+		<script 
+            src="/projects/TorusCube/vendor/three.js/Stats.js">
+		</script>
+
+    	<!-- Screenshot support lib. -->
+		<script 
+            src="/projects/TorusCube/vendor/threex/THREEx.screenshot.js">
+		</script>
+
+    	<!-- Support fullscreen display. -->
+		<script 
+            src="/projects/TorusCube/vendor/threex/THREEx.FullScreen.js">
+		</script>
+
+    	<!-- Support adjusting canvas and camera size transparently. -->
+		<script 
+            src="/projects/TorusCube/vendor/threex/THREEx.WindowResize.js">
+		</script>
+
+    	<!-- Provide easy panning camera hooked to mouse cursor. -->
+		<script 
+            src="/projects/TorusCube/vendor/threex/threex.dragpancontrols.js">
+		</script>
+
+    	<!-- Provide key interaction. -->
+		<script 
+            src="/projects/TorusCube/vendor/threex/THREEx.KeyboardState.js">
+		</script>
+
+    	<!-- Require supports AMD and seeds application by loading main. -->
+        <script 
+            type="text/javascript" 
+            src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js"
+            data-main="/projects/TorusCube/source/main.js">
+        </script>
+	</head>
+    <body>
+	    <!-- 3D container. -->
+        <div id="container"></div>
+    </body>
+</html>

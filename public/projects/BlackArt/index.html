@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Black Art</title>
+    
+    <style>
+        html
+        {
+            background:black;
+        }
+        #renderer
+        {
+            position: absolute;
+            margin-left:-400px;
+            margin-top:-300px;
+            left:50%;
+            top:50%;
+        }
+    </style>
+
+    <script 
+        type="text/javascript" 
+        src="source/engine/Matrix.js"></script>
+    <script 
+        type="text/javascript" 
+        src="source/engine/Model.js"></script>
+    <script 
+        type="text/javascript" 
+        src="source/engine/Polygon.js"></script>
+    <script 
+        type="text/javascript" 
+        src="source/engine/Renderer.js"></script>
+    <script 
+        type="text/javascript" 
+        src="source/engine/Vector.js"></script>
+
+    <script 
+        type="text/javascript" 
+        src="source/Script.js"></script>
+
+    <script
+        type="text/javascript">
+        window.onload = ready;
+    </script>
+</head>
+<body>
+    <canvas
+        id="renderer"
+        width="800"
+        height="600">
+    </canvas>
+</body>
+</html>

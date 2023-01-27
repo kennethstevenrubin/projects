@@ -1,0 +1,198 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<title>Top Secret</title>
+		<style>
+			html {
+
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
+			}
+			body {
+
+				font: 12px Arial;
+				margin: 0px;
+				padding: 0px;
+				height: 100%;
+				user-select: none;
+			}
+			::-webkit-scrollbar {
+
+				background: transparent;
+			}
+			::-webkit-scrollbar-button {
+
+				background:transparent;
+			}
+			::-webkit-scrollbar-thumb {
+
+				background: rgba(220, 227, 230, 0.25);
+				border-radius: 4px;
+			}
+			::-webkit-scrollbar-corner {
+
+				background: transparent;
+			}
+
+			#ContainerDiv {
+
+				height: 100%;
+				display: flex;
+				flex-flow: column;
+
+				background:rgb(30, 14, 83);
+				color:rgb(230, 233, 222);
+			}
+			#HeaderDiv {
+
+				flex: 0 0 auto;
+				padding: 4px;
+
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			.HeaderLarge {
+
+				font-size: 26px;
+			}
+			.HeaderItem {
+
+				flex: 0 0 auto;
+
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+			.HeaderPaddingLeft {
+
+				padding-left: 20px;
+			}
+			.HeaderPaddingRight {
+
+				padding-right: 20px;
+			}
+			#PasswordDiv {
+
+				-webkit-text-security: disc;
+				-webkit-appearance: textfield;
+				user-select: text;
+				margin: 4px;
+			}
+			#TopSecret {
+
+				background: url("./media/Top-secret-stamp.png") no-repeat;
+				background-size:contain;
+				width: 160px;
+				height: 70px;
+				margin: 4px;
+			}
+			.ContentLikeBorder {
+
+				background:rgba(255, 255, 255, 0.1);
+				border-radius: 4px;
+				padding: 4px;
+				padding-right: 10px;
+				padding-left: 10px;
+				margin: 4px;
+			}
+			.SomeKindOfButton:hover {
+
+				background:rgba(255, 255, 255, 0.5);
+				cursor: hand;
+			}
+			.SomeKindOfButton:active {
+
+				background:rgba(255, 255, 255, 0.3);
+				cursor: hand;
+			}
+
+			#ContentDiv {
+
+				flex: 1 1 auto;
+				overflow-x: hidden;
+				overflow-y: scroll;
+
+				display:flex;
+				flex-direction: column;
+				justify-content: flex-start;
+			}
+			.ContentItem {
+
+				background:rgba(255, 255, 255, 0.05);
+				flex: 0 0 auto;
+				width: calc(100% - 16px);
+				border-radius: 4px;
+				padding: 4px;
+				margin: 4px;
+
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+			}
+			.ContentItemBody {
+
+				flex: 1 0 auto;
+
+				margin-left: 4px;
+				padding: 4px;
+				border-radius: 4px;
+				background: rgba(0,0,0,0.25);
+
+				overflow: hidden;
+			}
+			.ContentItemRemove {
+
+				flex: 0 0 auto;
+				color: darkred;
+			}
+			.ContentItemRemove:hover {
+
+				background:rgba(255, 255, 255, 0.5);
+				cursor: hand;
+			}
+			.ContentItemRemove:active {
+
+				background:rgba(255, 255, 255, 0.3);
+				cursor: hand;
+			}
+
+			#ErrorDiv {
+
+				flex: 0 0 auto;
+				color: rgb(204, 109, 109);
+			}
+		</style>
+		<script
+			type="text/javascript"
+			src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js"
+			data-main="source/main">
+		</script>
+	</head>
+	<body>
+		<div id="ContainerDiv">
+			<div id="HeaderDiv">
+				<div class="HeaderItem HeaderPaddingRight">
+					<div id="TopSecret">
+					</div>
+				</div>
+				<div class="HeaderItem HeaderPaddingRight">
+					<div id="PasswordDiv" class="ContentLikeBorder" tabindex="1" contenteditable="true">
+					</div>
+				</div>
+				<div class="HeaderItem">
+					<div id="AddSecretDiv" class="ContentLikeBorder">
+						Add
+					</div>
+				</div>
+			</div>
+			<div id="ContentDiv">
+			</div>
+			<div id="ErrorDiv">
+			</div>
+		</div>
+	</body>
+</html>

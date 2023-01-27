@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Particle System Demo</title>
+    <meta 
+        charset="utf-8">
+    <meta 
+        name="viewport" 
+        content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <!-- Style -->
+    <style>
+        html
+        {
+            background: black;
+            overflow: hidden;
+        }
+        body
+        {
+            margin: 0px;
+        }
+    </style>
+    
+    <script
+        src="/projects/ThreeBBs/js/three.min.js">
+    </script>
+</head>
+<body>
+    <script>
+
+        // Define required objects up front so they are globally accessible.
+        var camera = null;
+        var scene = null;
+        var renderer = null;
+        var material = null;
+        var iMouseX = 0;
+        var iMouseY = 0;
+        var iWindowHalfX = window.innerWidth / 2;
+        var iWindowHalfY = window.innerHeight / 2;
+
+        // Function initializes WebGL and starts animation sequence.
+        (function init() {
+
+            // Just create a container in code.
+            var container = document.createElement('div');
+            // Add to DOM.
+            document.body.appendChild(container);
+
+            // Create a perspective camera with a really 
+            // wide view sized to the browser window.
+            // Note: camera is initially at the origin.
+            camera = new THREE.PerspectiveCamera(100,
+                window.innerWidth / window.innerHeight,
+                1,
+                3000);
+
+            // Create a scene to hold the particles 
+            // with a strange whitening fog of sorts.
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0xaaaaff,
+                0.0009);
+
+            // The geometry holds all particles as verticies.
+            var geometry = new THREE.Geometry();
+
+            // The sprite texture, stolen from google images....
+            var sprite = THREE.ImageUtils.loadTexture("/media/ballsave.png");
+
+            // The array of colors which gives variance to colored vertices/particles.
+            var colors = [];
+
+            // Create a whole bunch of particles add 
+            // to geometry and parameterize colors.
+            for (var i = 0; i < 10000; i++) {
+
+                // Place randomly in 3-space.
+                var vertex = new THREE.Vector3();
+                vertex.x = 3000 * Math.random() - 1500;
+                vertex.y = 3000 * Math.random() - 1500;
+                vertex.z = 3000 * Math.random() - 1500;
+
+                // Add to geometry.
+                geometry.vertices.push(vertex);
+
+                // Create the color component.
+                colors[i] = new THREE.Color(0xffffff);
+
+                // Vary hue based on x-coordinate.
+                colors[i].setHSV(((vertex.x + 1000) / 2000) * Math.random(),
+                    1,
+                    1);
+            }
+
+            // Hook up the colors to the geometry.
+            geometry.colors = colors;
+
+            // Allocate the material for the particles, 
+            // note: alpha-vertex colors.
+            material = new THREE.ParticleBasicMaterial({
+
+                size: 75,
+                map: sprite,
+                vertexColors: true,
+                transparent: true
+            });
+
+            // Finally, create the particle system 
+            // with the build geometry and material.
+            var particles = new THREE.ParticleSystem(geometry,
+                material);
+            particles.sortParticles = true;
+
+            // And add the particle system to
+            // the scene so it may be shown.
+            scene.add(particles);
+
+            // Allocate the renderer--only use WebGL, 
+            // a software ain't gonna cut it here.
+            renderer = new THREE.WebGLRenderer({
+
+                antialias: true,      // slows down rendering and of dubois value.
+                clearAlpha: 1
+            });
+
+            // Size to the window.
+            renderer.setSize(window.innerWidth,
+                window.innerHeight);
+            // Add to the DOM.
+            container.appendChild(renderer.domElement);
+
+            // Wire up some interactive events for mouse and touch clients.
+            document.addEventListener('mousemove',
+                function (event) {
+
+                    iMouseX = event.clientX - iWindowHalfX;
+                    iMouseY = event.clientY - iWindowHalfY;
+                },
+                false);
+            document.addEventListener('touchstart',
+                function (event) {
+
+                    if (event.touches.length === 1) {
+
+                        event.preventDefault();
+
+                        iMouseX = event.touches[0].pageX - iWindowHalfX;
+                        iMouseY = event.touches[0].pageY - iWindowHalfY;
+                    }
+                },
+                false);
+            document.addEventListener('touchmove',
+                function (event) {
+
+                    if (event.touches.length === 1) {
+
+                        event.preventDefault();
+
+                        iMouseX = event.touches[0].pageX - iWindowHalfX;
+                        iMouseY = event.touches[0].pageY - iWindowHalfY;
+                    }
+                },
+                false);
+            window.addEventListener('resize',
+                function (event) {
+
+                    iWindowHalfX = window.innerWidth / 2;
+                    iWindowHalfY = window.innerHeight / 2;
+
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+
+                    renderer.setSize(window.innerWidth,
+                        window.innerHeight);
+                },
+                false);
+
+            // Start off the animation.
+            animate();
+        })();
+
+        // Update camera position and over-all color hue.
+        function animate() {
+
+            // Smart timeout callback mechanism.
+            requestAnimationFrame(animate);
+
+            // Do some dinky calcs...
+            var dTime = Date.now() * 0.00005;
+
+            // Position the camera mostly based on mouse position relative to the center 
+            // of the screen, but also add a little time component for extra interest.
+            camera.position.x += (iMouseX - camera.position.x) * 0.05;
+            camera.position.y += (-iMouseY - camera.position.y) * 0.05;
+            camera.position.z = 10 * Math.sin(dTime * 10);
+
+            // Always point back to the center of the scene.
+            camera.lookAt(scene.position);
+
+            var dHueFactor = (360 * (1.0 + dTime) % 360) / 360;
+            material.color.setHSV(dHueFactor,
+                0.8,
+                1.0);
+
+            // Make things move, even if the mouse does not.
+            camera.rotation.x = 2 * Math.PI * Math.cos(dTime / 3);
+            camera.rotation.y = 2 * Math.PI * Math.cos(2 + dTime / 2);
+            camera.rotation.z = 2 * Math.PI * Math.cos(1 + dTime / 10);
+
+            // Pass everything on to the renderer.
+            renderer.render(scene,
+                camera);
+        }
+    </script>
+</body>
+</html>

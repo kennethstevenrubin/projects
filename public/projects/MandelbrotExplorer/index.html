@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>
+            Mandelbrot Set Explorer
+        </title>
+        <meta charset="utf-8">
+        <script type="x-shader/x-vertex" id="vertexshader">
+		
+		    // Switch on high precision floats.
+		    #ifdef GL_ES
+		        precision highp float;
+		    #endif
+		
+            // Just perform normal view/model/projection transformation to screen.
+		    void main()
+		    {
+			    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		    }
+	    </script>
+        <script type="x-shader/x-fragment" id="MandelbrotFragmentShader">
+
+		    // Switch on high precision floats.
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            // Coordinate uniforms.
+            uniform float left;
+            uniform float top;
+            uniform float width;
+            uniform float height;
+
+            // Time uniform.
+            uniform float time;
+
+            // Resolution/aspect uniform.
+            uniform vec2 resolution;
+
+            // Shader method outputs Mandelbrot at coordinates specified
+            void main(void) 
+            {
+                // Get position into ([0..1], [0..1]).
+                vec2 position = gl_FragCoord.xy / resolution.xy;
+
+                // Start (x, y) off.
+                float fX = (left + position.x * width);
+                float fY = (top + position.y * height);
+	
+                // Seed "C".
+                float fX0 = fX;
+                float fY0 = fY;
+
+                // Color becomes the color of the fragment.
+                float fColor = 0.0;
+
+                // Loop fixed number of times, keep track of hom many times it 
+                // takes before function diverges from the unit disk (times 4).
+                
+                for (int i = 0; i < 256; i++)
+                {
+                    // If outside unit disk.
+                    if (fX * fX + fY * fY > 4.0) 
+                    {
+                        break;
+                    }
+		
+                    // Else bouncing around inside unit disk--this is the recursion.
+                    float fXTemp = fX * fX - fY * fY + fX0;
+                    fY = 2.0 * fX * fY + fY0;
+                    fX = fXTemp;
+
+                    // Remember iteration count.
+                    fColor = float(i);
+                }
+                fColor = (fColor + time / 64.0) / 64.0;
+                fColor = fColor - floor(fColor);
+                
+                float fMR = sin(time * 0.001) * 0.5 + 0.5;
+                float fMG = sin(time * 0.00037) * 0.5 + 0.5;
+                float fMB = sin(time * 0.00013) * 0.5 + 0.5;
+                gl_FragColor = vec4(fColor * fMR, fColor * fMG, fColor * fMB, 1.0);
+            }
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script src="js/three.min.js"></script>
+        <script>
+
+            // Set up the scene, camera, and renderer as global variables.
+            var scene = null,
+                camera = null,
+                renderer = null,
+                geometry = null,
+                mesh = null,
+                shaderMaterial = null,
+                uniforms = null,                    // "Globalize" uniforms so it may be addressed and updated.
+                startTime = new Date().getTime(),   // Remember start time.
+                dLeft = -0.9,
+                dTop = -0.4,
+                dWidth = 0.2,
+                dHeight = 0.4,
+                dMouseDownLeft = 0,
+                dMouseDownTop = 0,
+                jDiv = null,
+                dDownClientX = 0,
+                dDownClientY = 0;
+
+            // Ready method invoked when the document is fully loaded.
+            $(document).ready(function () {
+
+                /* Wire mouse events.
+                $(document.body).mousedown(function (e) {
+
+                    var dPercentX = e.clientX / window.innerWidth;
+                    var dPercentY = 1 - e.clientY / window.innerHeight;
+                    dMouseDownLeft = dLeft + dPercentX * dWidth;
+                    dMouseDownTop = dTop + dPercentY * dHeight;
+
+                    dDownClientX = e.clientX;
+                    dDownClientY = e.clientY;
+                    
+                    jDiv = $("<div><div>");
+                    jDiv.css({
+                    
+                        "z-index":20,
+                        background: "yellow",
+                        opacity: 0.4,
+                        position: "absolute",
+                        display: "inline-block",
+                        left: e.clientX.toString() + "px",
+                        top: e.clientY.toString() + "px",
+                        width: "0px",
+                        height: "0px"
+                    });
+                    $(document.body).append(jDiv);
+                });
+                $(document.body).mousemove(function (e) {
+
+                    var dPercentX = e.clientX / window.innerWidth;
+                    var dPercentY = 1 - e.clientY / window.innerHeight;
+                    var dMouseLeft = dLeft + dPercentX * dWidth;
+                    var dMouseTop = dTop + dPercentY * dHeight;
+                    document.title = dMouseLeft.toFixed(3) + " " + dMouseTop.toFixed(3);
+
+                    if (jDiv) {
+                    
+                        if (e.clientX < dDownClientX) {
+
+                            jDiv.css({
+                            
+                                left: e.clientX.toString() + "px",
+                                width: Math.abs(e.clientX - dDownClientX).toString() + "px"
+                            });
+                        } else {
+                        
+                            jDiv.css({
+                            
+                                left: dDownClientX.toString() + "px",
+                                width: Math.abs(e.clientX - dDownClientX).toString() + "px"
+                            });
+                        }
+                        
+                        if (e.clientY < dDownClientY) {
+                        
+                            jDiv.css({
+                            
+                                top: e.clientY.toString() + "px",
+                                height: Math.abs(e.clientY - dDownClientY).toString() + "px"
+                            });
+                        } else {
+                        
+                            jDiv.css({
+                            
+                                top: dDownClientY.toString() + "px",
+                                height: Math.abs(e.clientY - dDownClientY).toString() + "px"
+                            });
+                        }
+                    }
+                });
+                $(document.body).mouseup(function (e) {
+
+                    $(jDiv).remove();
+                    jDiv = null;
+
+                    var dPercentX = e.clientX / window.innerWidth;
+                    var dPercentY = 1 - e.clientY / window.innerHeight;
+                    var dMouseUpLeft = dLeft + dPercentX * dWidth;
+                    var dMouseUpTop = dTop + dPercentY * dHeight;
+                    
+                    var dNewWidth = Math.abs(dMouseUpLeft - dMouseDownLeft);
+                    var dNewHeight = Math.abs(dMouseUpTop - dMouseDownTop);
+
+                    var dNewLeft = dMouseDownLeft;
+                    var dNewTop = dMouseDownTop;
+                    if (dMouseUpLeft < dNewLeft) {
+                    
+                        dNewLeft = dMouseUpLeft;
+                    }
+                    if (dMouseUpTop < dNewTop) {
+                    
+                        dNewTop = dMouseUpTop;
+                    }
+                    
+                    dLeft = dNewLeft;
+                    dTop = dNewTop;
+                    dWidth = dNewWidth;
+                    dHeight = dNewHeight;
+                    
+                    uniforms.left.value = dLeft;
+                    uniforms.top.value = dTop;
+                    uniforms.width.value = dWidth;
+                    uniforms.height.value = dHeight;
+                });*/
+
+                init();                
+                animate();
+
+                // Sets up the scene.
+                function init() {
+
+                    // Create the scene and set the scene size.
+                    scene = new THREE.Scene();
+                    var WIDTH = window.innerWidth,
+                        HEIGHT = window.innerHeight;
+
+                    // Create a renderer and add it to the DOM.
+                    renderer = new THREE.WebGLRenderer({
+
+                        antialias: true
+                    });
+                    renderer.setSize(WIDTH,
+                        HEIGHT);
+                    document.body.appendChild(renderer.domElement);
+
+                    // Create a camera, zoom it out from the model a bit, and add it to the scene.
+                    camera = new THREE.PerspectiveCamera(Math.PI / 4.0,
+                        WIDTH / HEIGHT,
+                        0.1,
+                        200);
+                    camera.position.set(0, 1, 0);
+                    camera.up = new THREE.Vector3(0,0,1);
+                    camera.lookAt(new THREE.Vector3(0,0,0));
+                    scene.add(camera);
+
+                    // Create an event listener that resizes the renderer with the browser window.
+                    window.addEventListener("resize",
+                        function () {
+
+                            // Re-extract size data.
+                            var WIDTH = window.innerWidth,
+                                HEIGHT = window.innerHeight;
+
+                            // Update the renderer and the camera.
+                            renderer.setSize(WIDTH,
+                                HEIGHT);
+                            camera.aspect = WIDTH / HEIGHT;
+                            camera.updateProjectionMatrix();
+
+                            // Update the uniform so next frame is drawn with correct aspect.
+                            uniforms.resolution.value = new THREE.Vector2(WIDTH,
+                                HEIGHT);
+                                
+                            scene.remove(mesh);
+                            var geometry = new THREE.PlaneGeometry(WIDTH/HEIGHT,
+                                1,
+                                1,
+                                1);
+                            mesh = new THREE.Mesh(geometry,
+                                shaderMaterial);
+                            mesh.rotateX(-Math.PI / 2);
+                            scene.add(mesh);
+                        });
+
+                    // Define simple plane geometry upon which to display the fractal.
+                    geometry = new THREE.PlaneGeometry(WIDTH/HEIGHT,
+                        1,
+                        1,
+                        1);
+
+                    // Define uniforms which are passed to the shaders each frame.
+                    uniforms = {
+
+                        time: {
+                        
+                            type: "f",
+                            value: (new Date().getTime - startTime)
+                        },
+                        left: {
+
+                            type: "f",
+                            value: dLeft
+                        },
+                        top: {
+
+                            type: "f",
+                            value: dTop
+                        },
+                        width: {
+
+                            type: "f",
+                            value: dWidth
+                        },
+                        height: {
+
+                            type: "f",
+                            value: dHeight
+                        },
+                        resolution: {
+
+                            type: "v2",
+                            value: new THREE.Vector2(WIDTH,
+                                HEIGHT)
+                        }
+                    };
+
+                    // Create the shader material.
+                    shaderMaterial = new THREE.ShaderMaterial({
+
+                        uniforms: uniforms,
+                        vertexShader: $('#vertexshader').text(),
+                        fragmentShader: $('#MandelbrotFragmentShader').text()
+                    });
+
+                    // Allocate the mesh which is added to the scene.
+                    mesh = new THREE.Mesh(geometry,
+                        shaderMaterial);
+                    mesh.rotateX(-Math.PI / 2);
+                    scene.add(mesh);
+                }
+
+                // Renders the scene and updates the render as needed.
+                function animate() {
+
+                    uniforms.time.value = (new Date().getTime() - startTime);
+
+                    // Render the scene.
+                    renderer.render(scene,
+                        camera);
+
+                    // Schedule next frame.
+                    setTimeout(requestAnimationFrame,
+                        50,
+                        animate);                }
+            });
+        </script>
+    </head>
+    <body style="margin: 0; overflow: hidden;">
+    </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html />
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Coder Testbed</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script type='text/javascript' src="frameworks/jquery/2.1.3/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="frameworks/blockly/blockly_compressed.js"></script>
+    <script type="text/javascript" src="frameworks/blockly/blocks_compressed.js"></script>
+    <script type="text/javascript" src="frameworks/blockly/javascript_compressed.js"></script>
+    <script type="text/javascript" src="frameworks/blockly/xml.js"></script>
+    <script type="text/javascript" src="frameworks/blockly/msg/js/en.js"></script>
+    <script type="text/javascript" src="frameworks/require/2.1.15/require.min.js"
+        data-main="source/main"></script>
+</head>
+<body>
+	<xml id="toolbox" style="display: none">
+      <category name="General">
+        <block type="controls_if"></block>
+        <block type="logic_compare"></block>
+        <block type="controls_repeat_ext"></block>
+        <block type="math_number"></block>
+        <block type="math_arithmetic"></block>
+        <block type="text"></block>
+        <block type="text_print"></block>
+      </category>
+      <category name="App">
+          <block type="App_Initialize"></block>
+          <block type="App_getThingyInstance"></block>
+          <block type="App_setThingyInstance"></block>
+      </category>
+      <category name="Thingy">
+          <block type="new_Thingy"></block>
+          <block type="Thingy_getX"></block>
+          <block type="Thingy_setX"></block>
+          <block type="Thingy_DoIt"></block>
+      </category>
+      <category name="Variables" custom="VARIABLE"></category>
+	</xml>
+    <div id="WrapperDiv">
+        <div id="FrameDiv">
+        </div>
+        <div id="MethodDiv">
+        </div>
+        <div id="WorkspacesDiv">
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+﻿body {
+
+    background: black;
+
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+#theuberthingcanvas {
+
+    flex: 1 1 auto;
+}

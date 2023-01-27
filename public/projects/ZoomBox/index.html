@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html {
+
+            background:black;
+        }
+    </style>
+
+    <script type="text/javascript" src="three.min.js"></script>
+    <script type="text/javascript" src="stats.min.js"></script>
+    <script type="text/javascript" src="physi.js"></script>
+
+    <script type="text/javascript">
+
+    "use strict";
+
+    // Configure physics engine modules.
+    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+
+    // Define globals.
+
+    // The methods.
+    var initScene, render, applyForce, bounce;
+
+    // The three scene objects.
+    var renderer, scene, directionalLight, camera;
+
+    // The mad box.
+    var box;
+
+    // Some helpers.
+    var render_stats, physics_stats;
+
+    // Create and initialize the universe.
+    initScene = function() {
+
+        // Standard WebGL renderer.
+        renderer = new THREE.WebGLRenderer({ 
+
+            antialias: true 
+        });
+
+        // Enable nice shadows.
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
+        var elementViewport = document.getElementById("viewport");
+        renderer.setSize(window.innerWidth, 
+            window.innerHeight);
+        elementViewport.appendChild(renderer.domElement);
+
+        // Allocate and add the helpers...
+        // Three.
+        render_stats = new Stats();
+        render_stats.domElement.style.position = 'absolute';
+        render_stats.domElement.style.top = '1px';
+        render_stats.domElement.style.zIndex = 100;
+        elementViewport.appendChild(render_stats.domElement);
+        // Physics.
+        physics_stats = new Stats();
+        physics_stats.domElement.style.position = 'absolute';
+        physics_stats.domElement.style.top = '50px';
+        physics_stats.domElement.style.zIndex = 100;
+        elementViewport.appendChild(physics_stats.domElement);
+
+        // Create the physics scene and (implicitly) the Three scene.
+        scene = new Physijs.Scene();
+
+        // Normal gravity.
+	    scene.setGravity(new THREE.Vector3(0, 
+            -10, 
+            0));
+
+        // Setup the physics callback independently 
+        // of the render callback (see below).
+        scene.addEventListener("update",
+            function() {
+
+                // First, apply forces for this slice.
+                applyForce();
+
+                // Update the physics (on a background thread).
+                scene.simulate();
+
+                // Update helper display.
+                physics_stats.update();
+            });
+
+        // Create the three camera and light.
+        camera = new THREE.PerspectiveCamera(45,
+            window.innerWidth / window.innerHeight,
+            1,
+            1000);
+        // Position up and out, looking back on the scene.
+        camera.position.set(0, 
+            100, 
+            100);
+        camera.lookAt(scene.position);
+        scene.add(camera);
+
+        // Create a directional light and configure it to cast shadows.
+	    directionalLight = new THREE.DirectionalLight(0xffffff);
+	    directionalLight.position.set(60, 
+            50, 
+            60);
+        directionalLight.castShadow = true;
+        //directionalLight.shadowCameraVisible = true;
+        directionalLight.shadowCameraLeft = -150;
+        directionalLight.shadowCameraTop = -150;
+        directionalLight.shadowCameraRight = 150;
+        directionalLight.shadowCameraBottom = 150;
+        directionalLight.shadowCameraNear = 1;
+        directionalLight.shadowCameraFar = 1000;
+        directionalLight.shadowBias = -0.0001
+        directionalLight.shadowMapWidth = 2048;
+        directionalLight.shadowMapHeight = 2048;
+        directionalLight.shadowDarkness = 0.7;
+	    scene.add(directionalLight);
+
+        // Allocate and configure the floor.
+        var textureFloor = THREE.ImageUtils.loadTexture("rocks.jpg");
+        var materialFloor = new THREE.MeshLambertMaterial({
+
+            map: textureFloor
+        });
+        var pmFloor = Physijs.createMaterial(materialFloor,
+            0.5,
+            0.9);
+        var floor = new Physijs.BoxMesh(new THREE.CubeGeometry(100, 
+                1, 
+                100),
+		    pmFloor,
+		    0);
+        floor.receiveShadow = true;
+	    scene.add(floor);
+
+        // Allocate and configure the walls.
+        var textureWall = THREE.ImageUtils.loadTexture("/media/brickwall.jpg");
+        textureWall.wrapS = THREE.RepeatWrapping;
+        textureWall.wrapT = THREE.RepeatWrapping;
+        textureWall.repeat.set( 10, 1 );
+        var materialWall = new THREE.MeshLambertMaterial({
+
+            map: textureWall
+        });
+        var pmWall = Physijs.createMaterial(materialWall,
+            0.1,
+            0.9);
+
+        // Back.
+        var wall0 = new Physijs.BoxMesh(new THREE.CubeGeometry(100, 
+                10, 
+                1),
+            pmWall,
+            0);
+        wall0.castShadow = true;
+        wall0.receiveShadow = true;
+        wall0.position.z = -49.5;
+        wall0.position.y = 5;
+        wall0.addEventListener("collision",
+            bounce);
+        scene.add(wall0);
+
+        // Front.
+        var wall1 = new Physijs.BoxMesh(new THREE.CubeGeometry(100, 
+                10, 
+                1),
+            pmWall,
+            0);
+        wall1.castShadow = true;
+        wall1.receiveShadow = true;
+        wall1.position.z = 49.5;
+        wall1.position.y = 5;
+        wall1.addEventListener("collision",
+            bounce);
+        scene.add(wall1);
+
+        // Left.
+        var wall2 = new Physijs.BoxMesh(new THREE.CubeGeometry(100, 
+                10, 
+                1),
+            pmWall,
+            0);
+        wall2.castShadow = true;
+        wall2.receiveShadow = true;
+        wall2.rotation.y = Math.PI / 2;
+        wall2.position.x = -49.5;
+        wall2.position.y = 5;
+        wall2.addEventListener("collision",
+            bounce);
+        scene.add(wall2);
+
+        // Right.
+        var wall3 = new Physijs.BoxMesh(new THREE.CubeGeometry(100, 
+                10, 
+                1),
+            pmWall,
+            0);
+        wall3.castShadow = true;
+        wall3.receiveShadow = true;
+        wall3.rotation.y = Math.PI / 2;
+        wall3.position.x = 49.5;
+        wall3.position.y = 5;
+        wall3.addEventListener("collision",
+            bounce);
+        scene.add(wall3);
+
+        // Allocate and configure the spheres.
+        var materialSphere = new THREE.MeshLambertMaterial({
+
+            color: new THREE.Color(0xffff00)    // They are yellow.
+        });
+        var pmSphere = Physijs.createMaterial(materialSphere,
+            0.1,
+            0.9);
+
+        // Create 10 of them.
+        for (var i = 0; i < 10; i++) {
+
+            var sphere = new Physijs.SphereMesh(new THREE.SphereGeometry(2, 
+                    20, 
+                    20),
+                pmSphere,
+                0.5);
+            sphere.isASphere = true;
+            sphere.position.x = Math.random() * 90 - 45;
+            sphere.position.z = Math.random() * 90 - 45;
+            sphere.position.y = Math.random() * 10 + 3; // Just slightly up.
+            sphere.castShadow = true;
+            sphere.receiveShadow = true;
+            scene.add(sphere);
+        }
+
+        // Finally allocate and configure the box.
+        var textureBox = THREE.ImageUtils.loadTexture("/media/a.jpg");
+        var materialBox = new THREE.MeshLambertMaterial({
+
+            map: textureBox
+        });
+        var pmBox = Physijs.createMaterial(materialBox,
+            0.1,
+            0.1);
+        box = new Physijs.BoxMesh(new THREE.CubeGeometry(5, 
+                3, 
+                5),
+            pmBox,
+            10);
+        box.position.y = 5;
+        box.rotation.x = 0.1;
+        box.rotation.z = 0.1;
+        box.castShadow = true;
+        box.receiveShadow = true;
+        scene.add(box);
+
+        // Start 'er up.
+        requestAnimationFrame(render);
+        scene.simulate();
+    };
+
+    // Simple Three render method.
+    render = function() {
+
+        // First, request the next call.
+        requestAnimationFrame(render);
+
+        // Do the render to the view port.
+        renderer.render(scene, 
+            camera);
+
+        // Update helper.
+        render_stats.update();
+    };
+
+    bounce = function(other_object, relative_velocity, relative_rotation, contact_normal ) {
+
+        // `this` has collided with `other_object` 
+        // with an impact speed of `relative_velocity` 
+        // and a rotational force of `relative_rotation` 
+        // and at normal `contact_normal`.
+
+        // Only kick spheres, the box is already mad.
+        if (other_object.isASphere !== undefined) {
+
+            var dRestitutionMagnitude = contact_normal.dot(relative_velocity);
+            var v3RestitutionVelocity = contact_normal.clone();
+            v3RestitutionVelocity.multiplyScalar(dRestitutionMagnitude * 0.6);
+
+            // Impart a force to the sphere 
+            // to kick it off the wall a little.
+            other_object.applyImpulse(v3RestitutionVelocity,
+                new THREE.Vector3( 0, 0, 0 ));
+        }
+    };
+    
+    // Method applies a force to the box every slice.
+    applyForce = function() {
+
+        // Set strength of the madness.
+        var strength = 5;
+
+        // Calculate the force linear vector.
+        var matrix = new THREE.Matrix4();
+        matrix.extractRotation(box.matrix);
+        var direction = new THREE.Vector3(0, 0, 1);
+        matrix.multiplyVector3(direction);
+        direction.normalize();
+        direction.multiplyScalar(strength);
+
+        // And the off-center offset, which adds angular velocity.
+        var dTime = (new Date()).getTime() / 1000;
+        var offset = new THREE.Vector3(Math.sin(dTime),0,Math.cos(dTime));
+
+        // Push the box.
+        box.applyImpulse(direction, 
+            offset);
+
+        // Calcualate a "center-restitution" force 
+        // to prevent the box from sticking to walls.
+        var v3Position = box.position.clone();
+        v3Position = v3Position.negate();
+        v3Position = v3Position.normalize();
+        v3Position = v3Position.multiplyScalar(5);
+        // And apply it.
+        box.applyImpulse(v3Position,
+            new THREE.Vector3( 0, 0, 0 ));
+    };
+
+    // Start the starting of the universe.
+    window.onload = initScene;
+
+    </script>
+</head>
+<body>
+    <div id="viewport"></div>
+</body>
+</html>

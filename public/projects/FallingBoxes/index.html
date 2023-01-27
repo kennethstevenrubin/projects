@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <style>
+    html {
+
+        background:black;
+    }
+    </style>
+
+    <script type="text/javascript" src="three.min.js"></script>
+    <script type="text/javascript" src="physi.js"></script>
+
+    <script type="text/javascript">
+
+    'use strict';
+
+    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+
+    var initScene, render, renderer, scene, directionalLight, camera, box, sphere, floor, pm2;
+
+    initScene = function() {
+
+        renderer = new THREE.WebGLRenderer({ 
+
+            antialias: true 
+        });
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapType = THREE.PCFSoftShadowMap;
+        renderer.setSize(window.innerWidth, 
+            window.innerHeight);
+        document.getElementById("viewport").appendChild(renderer.domElement);
+
+        scene = new Physijs.Scene();
+	    scene.setGravity(new THREE.Vector3(0, 
+            -10, 
+            0));
+
+        camera = new THREE.PerspectiveCamera(45,
+            window.innerWidth / window.innerHeight,
+            1,
+            1000);
+        camera.position.set(0, 
+            30, 
+            70);
+        camera.lookAt(scene.position);
+        scene.add(camera);
+
+	    directionalLight = new THREE.DirectionalLight(0xffffff);
+	    directionalLight.position.set(60, 
+            20, 
+            60);
+        directionalLight.castShadow = true;
+        //directionalLight.shadowCameraVisible = true;
+        directionalLight.shadowCameraLeft = -60;
+        directionalLight.shadowCameraTop = -60;
+        directionalLight.shadowCameraRight = 60;
+        directionalLight.shadowCameraBottom = 60;
+        directionalLight.shadowCameraNear = 1;
+        directionalLight.shadowCameraFar = 1000;
+        directionalLight.shadowBias = -.00001
+        directionalLight.shadowMapWidth = directionalLight.shadowMapHeight = 2048;
+        directionalLight.shadowDarkness = 0.7;
+	    scene.add(directionalLight);
+
+        var textureFloor = THREE.ImageUtils.loadTexture("/media/UV_Grid_Sm.jpg");
+        var materialFloor = new THREE.MeshBasicMaterial({
+
+            map: textureFloor
+        });
+        var pmFloor = Physijs.createMaterial(materialFloor,
+            0.8,
+            0.3);
+
+        var texture2 = THREE.ImageUtils.loadTexture("/media/a.jpg");
+        var material2 = new THREE.MeshLambertMaterial({
+
+            map: texture2
+        });
+        pm2 = Physijs.createMaterial(material2,
+            0.8,
+            0.3);
+
+    	// floor
+        floor = new Physijs.BoxMesh(new THREE.CubeGeometry(50, 
+                1, 
+                50),
+		    pmFloor,
+		    0);
+        floor.rotation.x = 0.0;
+	    floor.position.y = -5;
+        floor.receiveShadow = true;
+	    scene.add(floor);
+
+        requestAnimationFrame(render);
+    };
+
+    render = function() {
+
+        // Create a box every 4 seconds, or so.
+        if (Math.random() < (60/1000) / 4) {
+
+            // Box
+            var dMass = Math.random() * 3 + 1;
+            var boxNew = new Physijs.BoxMesh(new THREE.CubeGeometry(dMass, 
+                    dMass, 
+                    dMass),
+                pm2,
+                dMass);
+            boxNew.position.x = Math.random() - 0.5;
+            boxNew.position.z = Math.random() - 0.5;
+            boxNew.position.y = 50;
+            boxNew.rotation.x = 2 * Math.PI * Math.random() - Math.PI;
+            boxNew.rotation.y = 2 * Math.PI * Math.random() - Math.PI;
+            boxNew.rotation.z =  2 * Math.PI * Math.random() - Math.PI;
+            boxNew.castShadow = true;
+            boxNew.receiveShadow = true;
+            scene.add(boxNew);
+        }
+
+        scene.simulate(); // run physics
+
+        renderer.render(scene, 
+            camera); // render the scene
+
+        // Remove objects that have fallen off.
+        for (var i = 0; i < scene.children.length; i++) {
+
+            if (scene.children[i].position.y < -250) {
+
+                scene.remove(scene.children[i]);
+            }
+        }
+
+        requestAnimationFrame(render);
+    };
+
+    window.onload = initScene;
+
+    </script>
+</head>
+
+<body>
+    <div id="viewport"></div>
+</body>
+</html>

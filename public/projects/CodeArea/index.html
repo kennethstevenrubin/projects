@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html />
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Code Area</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script type="text/javascript" src="./source/libraries/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="./source/libraries/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="./source/libraries/require.min.js"
+        data-main="source/Main"></script>
+</head>
+<body>
+	Now that it is done it is embarrasingly complex.<br/>
+	<br/>
+	There are a few things I would do differently if I thought we were going with this.<br/>
+	For instance, I would color the block area a different color than the expression areas.<br/> 
+	I would move the scroll bars out from the parameter and statement sections of the method to scroll the whole method and I would have the method parameter section grow dynamically, like the invocation statement formal parameter list.<br/> 
+	I would move the "add" rows for statements and parameters out of their respective areas.<br/>
+	Well, frankly, there would be a bunch of changes--but this is the gist of the design I imagined.<br/>
+	Also, this completely leaves out the complexity of expressions and expression building.<br/>
+	And the add functionality is non functioning, but you can scroll with the scroll glyphs and inside the statement block.<br/>
+	<br/>
+	Unfortunately for me, this model is surprisingly complete--from an architectural perspective.<br/>
+	For instance, the for statement could contain another for statement and everything would properly nest and such.<br/>
+	And the blocks grow and size as they should.  So if you could add new statements they would merge into the structure perfectly.<br/>
+	Plus there's plenty of general architecture too, like: Point, and Size and Area and Triangle classes.  Though I don't know what use they will get now.<br/>
+	<br/>
+	Anyway, this mess basically is the sample method:<br/>
+	function LoopAndAlert(iMaxCount) { for (var i = 0; i < iMaxCount; i++) { alert(i); } }<br/>
+	<br/>
+	All told, this took about 4 days to implement, say: 8-10 hours total.  The rest of the time was spent working for Broadridge or recovering from working for Broadridge.<br/>
+	I feel like this lets us down a bit.  Not sure where to go from here.<br/>
+	<br/>
+	<div id="CodeArea"/>
+</body>
+</html>

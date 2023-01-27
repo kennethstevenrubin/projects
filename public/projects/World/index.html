@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta 
+        charset="utf-8" />
+    <meta 
+        http-equiv="X-UA-Compatible" 
+        content="IE=edge,chrome=1" />
+    <meta 
+        name="viewport" 
+        content="width=device-width, initial-scale=1" />
+
+    <title>World</title>
+
+    <!-- Define an in-DOM style element. -->
+    <style>
+
+        html
+        {
+            width:100%;
+            height:100%;
+            background:#fff;
+        }
+        #WorldImg
+        {
+            display:inline-block;
+            position:absolute;
+            left:0px;
+            top:1px;
+            height:100px;
+            width:250px;
+        }
+        #TitleDiv
+        {
+            display:inline-block;
+            position:absolute;
+            left:250px;
+            top:10px;
+            right:10px;
+            height:80px;
+            font-size: 60px;
+            overflow:hidden;
+            padding-top:5px;
+            z-index:2;
+        }
+        #ContainerDiv
+        {
+            display:inline-block;
+            position:absolute;
+            left:20px;
+            top:110px;
+            right:20px;
+            bottom:20px;
+            overflow:hidden;
+        }
+        #DataGridDiv
+        {
+            display:inline-block;
+            position:absolute;
+            left:1px;
+            top:1px;
+            right:1px;
+            bottom:1px;
+        }
+
+    </style>
+
+    <!-- Include jQuery, jQueryUI and Require. -->
+    <script 
+        type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">
+    </script>
+    <script 
+        type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js">
+    </script>
+    <script 
+        type="text/javascript" 
+        src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js" 
+        data-main="/">
+    </script>
+
+    <!-- Main application code. -->
+    <script>
+
+        // Execute at start.
+        $(document).ready(function () {
+
+            try {
+
+                // Add an image to the DOM--load from media folder.
+                $(document.body).append("<img id='WorldImg' src='/media/world.png'/>");
+
+                // Require prototype first because modules are loaded out-of-order.
+                require(["/MithrilLib/system/prototypes.js"],
+                    function () {   // Prototype does not require a reference.
+
+                        try {
+
+                            // Require MithrilLib modules to select data and display in DataGrid.
+                            require(["/MithrilLib/data/sql.js",
+                                "/MithrilLib/gui/DataGrid.js"],
+                                function (sql,
+                                    DataGrid) {
+
+                                    try {
+
+                                        // Execute query to get world countries.
+                                        var exceptionRet = sql.execute("SELECT id, name, continent, capital, surfaceArea, population FROM world.country",
+                                            function (arrayCountries) {
+
+                                                try {
+
+                                                    // Allocate and create the grid with some customization and the data selected.
+                                                    var dg = new DataGrid("#DataGridDiv",
+                                                        [{
+
+                                                            mapping: "id",
+                                                            type: "amount",
+                                                            visible: false,
+                                                            uid: true
+                                                        }, {
+
+                                                            title: "Name",
+                                                            mapping: "name",
+                                                            width: 310,
+                                                            sortOrder: 1,
+                                                            sortDirection: "Ascending"
+                                                        }, {
+
+                                                            title: "Continent",
+                                                            mapping: "continent",
+                                                            width: 200,
+                                                            filter: null,
+                                                            type: "string",
+                                                            inPlaceEdit: {
+
+                                                                values: ["Africa",
+                                                                    "Asia",
+                                                                    "Europe",
+                                                                    "North America",
+                                                                    "Oceania",
+                                                                    "South America"]
+                                                            }
+                                                        }, {
+
+                                                            title: "Capital",
+                                                            mapping: "capital",
+                                                            width: 280
+                                                        }, {
+
+                                                            title: "Surface Area",
+                                                            mapping: "surfaceArea",
+                                                            lineAlignment: "right",
+                                                            width: 165,
+                                                            type: "amount",
+                                                            total: true
+                                                        }, {
+
+                                                            title: "Population",
+                                                            mapping: "population",
+                                                            lineAlignment: "right",
+                                                            width: 185,
+                                                            type: "amount",
+                                                            total: true
+                                                        }],
+                                                        arrayCountries,
+                                                        {
+
+                                                            onNew: function (functionCallbackComplete) {
+
+                                                                try {
+
+                                                                    // Generate the country UID.
+                                                                    var uidCountry = Math.floor(1000000000 * Math.random());
+
+                                                                    // Execute Sql to delete row.
+                                                                    var exceptionRet = sql.execute("INSERT INTO world.country VALUES (" + uidCountry + ", 'A Country', 'Asia', 'A City', 0, 0)",
+                                                                        function (result) {
+
+                                                                            try {
+
+                                                                                // Remove from the grid.
+                                                                                functionCallbackComplete(uidCountry,
+                                                                                    {
+
+                                                                                        id: uidCountry,
+                                                                                        name: 'A Country',
+                                                                                        continent: 'Asia',
+                                                                                        capital: 'A City',
+                                                                                        surfaceArea: 0,
+                                                                                        population: 0
+                                                                                    });
+                                                                            } catch (e) {
+
+                                                                                alert(e.message);
+                                                                            }
+                                                                        },
+                                                                        function (strError) {
+
+                                                                            alert(strError);
+                                                                        },
+                                                                        true);
+                                                                    if (exceptionRet !== null) {
+
+                                                                        throw exceptionRet;
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+                                                                }
+                                                            },
+                                                            onInPlaceEdit: function (rowOriginal,
+                                                                rowNew,
+                                                                functionCallbackComplete) {
+
+                                                                try {
+
+                                                                    // Get the country UID.
+                                                                    var uidCountry = rowOriginal.id;
+
+                                                                    // Execute query to get world countries.
+                                                                    var exceptionRet = sql.execute("UPDATE world.country SET name = '" + rowNew.name + "'," +
+                                                                            " continent = '" + rowNew.continent + "'," +
+                                                                            " capital = '" + rowNew.capital + "'," +
+                                                                            " surfaceArea = " + rowNew.surfaceArea + "," +
+                                                                            " population = " + rowNew.population +
+                                                                            " WHERE id = " + uidCountry,
+                                                                        function () {
+
+                                                                            try {
+
+                                                                                functionCallbackComplete();
+                                                                            } catch (e) {
+
+                                                                                alert(e.message);
+
+                                                                                // Free the grid.
+                                                                                functionCallbackComplete();
+                                                                            }
+                                                                        },
+                                                                        function (strError) {
+
+                                                                            alert(strError);
+
+                                                                            // Free the grid.
+                                                                            functionCallbackComplete();
+                                                                        },
+                                                                        false);
+                                                                    if (exceptionRet !== null) {
+
+                                                                        throw exceptionRet;
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+
+                                                                    // Free the grid on error.
+                                                                    functionCallbackComplete();
+                                                                }
+                                                            },
+                                                            onDelete: function (row,
+                                                                functionCallbackComplete) {
+
+                                                                try {
+
+                                                                    // Get the country UID.
+                                                                    var uidCountry = row.id;
+
+                                                                    // Execute Sql to delete row.
+                                                                    var exceptionRet = sql.execute("DELETE FROM world.country WHERE id = '" + uidCountry + "'",
+                                                                        function (result) {
+
+                                                                            try {
+
+                                                                                // Remove from the grid.
+                                                                                functionCallbackComplete();
+                                                                            } catch (e) {
+
+                                                                                alert(e.message);
+
+                                                                                // Free the grid.
+                                                                                functionCallbackComplete();
+                                                                            }
+                                                                        },
+                                                                        function (strError) {
+
+                                                                            alert(strError);
+
+                                                                            // Free the grid.
+                                                                            functionCallbackComplete();
+                                                                        },
+                                                                        true);
+                                                                    if (exceptionRet !== null) {
+
+                                                                        throw exceptionRet;
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+
+                                                                    // Free the grid on error.
+                                                                    functionCallbackComplete();
+                                                                }
+                                                            },
+                                                            rowHeader: {
+
+                                                                width: 45
+                                                            }
+                                                        });
+                                                } catch (e) {
+
+                                                    alert(e.message);
+                                                }
+                                            },
+                                            function (strError) {
+
+                                                alert(strError);
+                                            },
+                                            true);
+                                        if (exceptionRet !== null) {
+
+                                            throw exceptionRet;
+                                        }
+                                    } catch (e) {
+
+                                        alert(e.message);
+                                    }
+                                });
+                        } catch (e) {
+
+                            alert(e.message);
+                        }
+                    });
+            } catch (e) {
+
+                alert(e.message);
+            }
+        });
+
+    </script>
+</head>
+<body>
+    <div id="TitleDiv">Countries of the World</div>
+    <div id="ContainerDiv">
+        <div id="DataGridDiv">
+        </div>
+    </div>
+</body>
+</html>

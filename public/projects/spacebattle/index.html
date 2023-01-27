@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+	<head>
+    	<!-- Title of application. -->
+		<title>
+            Space Battle
+		</title>
+
+    	<!-- Page in variable width 8-bit encoding (standard). -->
+		<meta 
+            charset="utf-8">
+
+    	<!-- Instruct mobile devices to render entire page just as a desktop browser would (i.e. no scrollbars). -->
+		<meta 
+            name="viewport" 
+            content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+        <!-- Style -->
+        <style>
+            html
+            {
+                background: black;
+                overflow: hidden;
+            }
+            body
+            {
+                margin: 0px;
+            }
+        </style>
+        
+    	<!-- jQuery! -->
+        <script 
+            type="text/javascript" 
+            src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+        </script>
+
+    	<!-- Require supports AMD and seeds application by loading main. -->
+        <script 
+            type="text/javascript" 
+            src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js"
+            data-main="/projects/spacebattle/source/Application.js">
+        </script>
+	</head>
+    <body>
+	    <!-- 3D container. -->
+        <div id="container"></div>
+    </body>
+</html>

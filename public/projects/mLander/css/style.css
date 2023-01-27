@@ -1,0 +1,15 @@
+﻿*
+{
+	margin:0px;
+	padding:0px;
+}
+#Plum
+{
+    position:absolute;
+    left:0px;
+    right:0px;
+    width:800px;
+    height:600px;
+    background:#333;
+    color:yellow;
+}

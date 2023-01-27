@@ -1,0 +1,639 @@
+<!DOCTYPE html />
+<html lang="en">
+<head>
+    <meta 
+        charset="utf-8" />
+    <meta 
+        http-equiv="X-UA-Compatible" 
+        content="IE=edge,chrome=1" />
+    <meta 
+        name="viewport" 
+        content="width=device-width, initial-scale=1" />
+
+    <title>Good Day</title>
+    
+    <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
+
+    <style>
+        body 
+        {
+            background:linear-gradient(-45deg, rgb(100,200,100), rgb(250,250,250));
+            font: 20px Chango;
+        }
+
+        div
+        {
+            position:absolute;
+            display: block;
+            border: 1px solid black;
+        }
+
+        #container
+        {
+            position:relative;
+            left:10px;
+            width:400px;
+            height:200px;
+            cursor:pointer;
+            background:rgba(20,20,210,0.65);
+            background-repeat:no-repeat;
+            background-position: center center;
+            background-size: 50%;
+            background-image:url(/media/happy.png);
+            box-shadow:rgba(0,0,0,0.4) 4px 4px 4px;
+        }
+
+        #good
+        {
+            left:2%;
+            top:2%;
+            width:46%;
+            height:96%;
+            cursor:pointer;
+            background:rgba(255,255,255,0.35);
+            background-repeat:no-repeat;
+            background-position: center center;
+            background-size: 50%;
+            background-image:url(/media/happy.png);
+        }
+
+        #bad
+        {
+            right:2%;
+            top:2%;
+            width:46%;
+            height:96%;
+            cursor:pointer;
+            background:rgba(0,0,0,0.35);
+            background-repeat:no-repeat;
+            background-position: center center;
+            background-size: 50%;
+            background-image:url(/media/sad.png);
+        }
+
+        #overlay
+        {
+            left:1%;
+            top:1%;
+            width:98%;
+            height:98%;
+            z-index:2;
+            background:blue;
+            opacity:0.0001;
+        }
+
+        #CalendarCanvas
+        {
+            display:block;
+            position:relative;
+            background:rgb(35, 56, 80);
+            border: 2px solid black;
+            corder-radius: 4px;
+            box-shadow:rgba(0,0,0,0.4) 4px 4px 4px;
+            left: 10px;
+            margin-top:20px;
+            width:400px;
+            height:400px;
+            z-index:3;
+        }
+    </style>
+
+    <script 
+        type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js">
+    </script>
+    <script 
+        type="text/javascript" 
+        src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.8/require.min.js" 
+        data-main="/">
+    </script>
+    <script 
+        type="text/javascript">
+
+        // Execute when DOM is ready.
+        $(document).ready(function () {
+
+                // Require prototype first because modules are loaded out-of-order(?!).
+                require(["/MithrilLib/system/prototypes.js"],
+                    function () {   //Prototype does not require a reference.
+
+                        // Hook the whole mess.
+                        require(["/MithrilLib/utility/TimerCutSwitch.js",
+                            "/MithrilLib/data/sql.js"],
+                            function (TimerCutSwitch,
+                                sql) {
+
+                                try {
+
+                                    // State fields.
+                                    var strDown = null;
+                                    var data = {
+
+                                    };
+                                    var bVoted = false;
+                                    var calendar = null;
+                                    var tcsShowMonth = new TimerCutSwitch(function (objectPayload) {
+
+                                        try {
+
+                                            // Get data from server.
+                                            var exceptionRet = sql.execute("SELECT stamp, (SUM(vote) / COUNT(vote) > 0.5) as Happy FROM GoodDay.log WHERE MONTH(stamp) = " + (objectPayload.month + 1) +
+                                                    " AND YEAR(stamp) = " + objectPayload.year + " GROUP BY YEAR(stamp), MONTH(stamp), DAY(stamp)",
+                                                function (arrayRet) {
+
+                                                    try {
+
+                                                        // Loop over day data returned from server.
+                                                        for (var i = 0; i < arrayRet.length; i++) {
+
+                                                            var rowIth = arrayRet[i];
+
+                                                            var strStamp = rowIth["stamp"];
+                                                            var dateStamp = strStamp.parseMySQLDate();
+                                                            var bHappy = (rowIth["Happy"] === 1);
+
+                                                            data[dateStamp.formatDateForDisplay()] = bHappy
+                                                        }
+
+                                                        // Cause the calendar to re-render.
+                                                        var exceptionRet = calendar.render();
+                                                        if (exceptionRet !== null) {
+
+                                                            throw exceptionRet;
+                                                        }
+                                                    } catch (e) {
+
+                                                        alert(e);
+                                                    }
+                                                },
+                                                function (strError) {
+
+                                                    alert(strError);
+                                                });
+                                            if (exceptionRet !== null) {
+
+                                                alert(exceptionRet.message);
+                                            }
+
+                                        } catch (e) {
+
+                                            alert(e.message);
+                                        }
+                                    },
+                                        300);
+
+                                    // Function calls off to the server to get summation result.
+                                    var functionGetResults = function () {
+
+                                        try {
+
+                                            // Nest the calls to get all three data sets in the success handlers.
+                                            return sql.execute("SELECT COUNT(vote), SUM(vote) FROM GoodDay.log",
+                                                function (arrayTotal) {
+
+                                                    try {
+
+                                                        // Call year.
+                                                        var exceptionRet = sql.execute("SELECT COUNT(vote), SUM(vote) FROM GoodDay.log WHERE YEAR(CURDATE()) = YEAR(stamp)",
+                                                            function (arrayYearToDate) {
+
+                                                                try {
+
+                                                                    // Call month.
+                                                                    var exceptionRet = sql.execute("SELECT COUNT(vote), SUM(vote) FROM GoodDay.log WHERE YEAR(CURDATE()) = YEAR(stamp) AND MONTH(CURDATE()) = MONTH(stamp)",
+                                                                        function (arrayMonthToDate) {
+
+                                                                            try {
+
+                                                                                // Call today.
+                                                                                var exceptionRet = sql.execute("SELECT COUNT(vote), SUM(vote) FROM GoodDay.log WHERE YEAR(CURDATE()) = YEAR(stamp) AND MONTH(CURDATE()) = MONTH(stamp) AND DAY(CURDATE()) = DAY(stamp)",
+                                                                                    function (arrayToday) {
+
+                                                                                        try {
+
+                                                                                            // 
+                                                                                            var iCount = arrayTotal[0]["COUNT(vote)"];
+                                                                                            var iSum = arrayTotal[0]["SUM(vote)"];
+                                                                                            var dRatio = iSum / iCount;
+                                                                                            var bGoodTotal = dRatio >= 0.5;
+                                                                                            //alert("Total: " + iSum.toString() + " " + iCount.toString());
+
+                                                                                            iCount = arrayYearToDate[0]["COUNT(vote)"];
+                                                                                            iSum = arrayYearToDate[0]["SUM(vote)"];
+                                                                                            dRatio = iSum / iCount;
+                                                                                            var bGoodYearToDate = dRatio >= 0.5;
+                                                                                            //alert("Year: " + iSum.toString() + " " + iCount.toString());
+
+                                                                                            iCount = arrayMonthToDate[0]["COUNT(vote)"];
+                                                                                            iSum = arrayMonthToDate[0]["SUM(vote)"];
+                                                                                            dRatio = iSum / iCount;
+                                                                                            var bGoodMonthToDate = dRatio >= 0.5;
+                                                                                            //alert("Month: " + iSum.toString() + " " + iCount.toString());
+
+                                                                                            iCount = arrayToday[0]["COUNT(vote)"];
+                                                                                            iSum = arrayToday[0]["SUM(vote)"];
+                                                                                            dRatio = iSum / iCount;
+                                                                                            var bGoodToday = dRatio >= 0.5;
+                                                                                            //alert("Today: " + iSum.toString() + " " + iCount.toString());
+
+                                                                                            var jPopup = $("#Popup");
+                                                                                            var strGoodTotal = "<img id='TotalGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/happy.png' style='height:20%;' />";
+                                                                                            var strBadTotal = "<img id='TotalGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/sad.png' style='height:20%;' />";
+                                                                                            var strGoodYearToDate = "<img id='YearToDateGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/happy.png' style='height:20%;' />";
+                                                                                            var strBadYearToDate = "<img id='YearToDateGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/sad.png' style='height:20%;' />";
+                                                                                            var strGoodMonthToDate = "<img id='MonthToDateGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/happy.png' style='height:20%;' />";
+                                                                                            var strBadMonthToDate = "<img id='MonthToDateGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/sad.png' style='height:20%;' />";
+                                                                                            var strGoodToday = "<img id='TodayGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/happy.png' style='height:20%;' />";
+                                                                                            var strBadToday = "<img id='TodayGood' src='" + document.location.protocol + "//" + document.domain + "/GoodDay/media/sad.png' style='height:20%;' />";
+                                                                                            jPopup.html("<br/>" +
+                                                                                                (bGoodTotal ? strGoodTotal : strBadTotal) + "<br/>" +
+                                                                                                (bGoodYearToDate ? strGoodYearToDate : strBadYearToDate) + "<br/>" +
+                                                                                                (bGoodMonthToDate ? strGoodMonthToDate : strBadMonthToDate) + "<br/>" +
+                                                                                                (bGoodToday ? strGoodToday : strBadToday) + "<br/>"
+                                                                                                );
+
+                                                                                            $("#TotalGood").animate({
+
+                                                                                                opacity: 1
+                                                                                            },
+                                                                                                1000,
+                                                                                                function () {
+
+                                                                                                    $("#YearToDateGood").animate({
+
+                                                                                                        opacity: 1
+                                                                                                    },
+                                                                                                        1000,
+                                                                                                        function () {
+
+                                                                                                            $("#MonthToDateGood").animate({
+
+                                                                                                                opacity: 1
+                                                                                                            },
+                                                                                                                1000,
+                                                                                                                function () {
+
+                                                                                                                    $("#TodayGood").animate({
+
+                                                                                                                        opacity: 1
+                                                                                                                    },
+                                                                                                                        1000,
+                                                                                                                        function () {
+
+
+                                                                                                                        });
+                                                                                                                });
+                                                                                                        });
+                                                                                                });
+
+                                                                                        } catch (e) {
+
+                                                                                            alert(e.message);
+                                                                                        }
+                                                                                    },
+                                                                                    function (strError) {
+
+                                                                                        alert(strError);
+                                                                                    },
+                                                                                    true);
+                                                                                if (exceptionRet !== null) {
+
+                                                                                    alert(exceptionRet.message);
+                                                                                }
+                                                                            } catch (e) {
+
+                                                                                alert(e.message);
+                                                                            }
+                                                                        },
+                                                                        function (strError) {
+
+                                                                            alert(strError);
+                                                                        },
+                                                                        true);
+                                                                    if (exceptionRet !== null) {
+
+                                                                        alert(exceptionRet.message);
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+                                                                }
+                                                            },
+                                                            function (strError) {
+
+                                                                alert(strError);
+                                                            },
+                                                            true);
+                                                        if (exceptionRet !== null) {
+
+                                                            alert(exceptionRet.message);
+                                                        }
+                                                    } catch (e) {
+
+                                                        alert(e.message);
+                                                    }
+                                                },
+                                                function (strError) {
+
+                                                    alert(strError);
+                                                },
+                                                true);
+                                        } catch (e) {
+
+                                            return e;
+                                        }
+                                    };
+
+                                    // Function shows an OK message to the user.
+                                    var functionReport = function () {
+
+                                        try {
+
+                                            var jOverlay = $("<div id='Overlay'></div>");
+                                            $(document.body).append(jOverlay);
+
+                                            var jCanvas = $("<canvas id='CalendarCanvas'>");
+                                            $(document.body).append(jCanvas);
+
+                                            require(["/MithrilLib/gui/Calendar.js"],
+                                                function (Calendar) {
+
+                                                    // Size the canvas to how big the owning element is.
+                                                    jCanvas.attr({
+
+                                                        width: jCanvas.width(),
+                                                        height: jCanvas.height()
+                                                    });
+
+                                                    // Create the calendar.
+                                                    calendar = new Calendar("#CalendarCanvas",
+                                                        {
+                                                            font: "20px Helvetica",
+                                                            lineWidthArrow: 4,
+                                                            fillBackground: "rgb(35, 56, 80)",
+                                                            centerText: true,
+                                                            onCellRender: function (context,
+                                                                dCellLeft,
+                                                                dCellTop,
+                                                                dCellWdith,
+                                                                dCellHeight,
+                                                                dateCell) {
+
+                                                                try {
+
+                                                                    // Fill in background.
+                                                                    context.fillStyle = "rgba(0,0,0,0.05)";
+                                                                    context.fillRect(dCellLeft + 1,
+                                                                        dCellTop + 1,
+                                                                        dCellWdith - 2,
+                                                                        dCellHeight - 2);
+
+                                                                    // Render the face, if specified.
+                                                                    var strCellDate = dateCell.formatDateForDisplay();
+                                                                    if (data.hasOwnProperty(strCellDate)) {
+
+                                                                        var bHappy = data[strCellDate];
+                                                                        if (!bHappy) {
+
+                                                                            context.fillStyle = "rgba(128,0,0,0.5)";
+                                                                        } else {
+
+                                                                            context.fillStyle = "rgba(0,128,0,0.5)";
+                                                                        }
+                                                                        context.fillRect(dCellLeft + 3,
+                                                                            dCellTop + 3,
+                                                                            dCellWdith - 6,
+                                                                            dCellHeight - 6);
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+                                                                }
+                                                            },
+                                                            onShowMonth: function (iMonth,
+                                                                iYear) {
+
+                                                                try {
+
+                                                                    // Reset data until gotten again from server.
+                                                                    data = {
+
+                                                                    };
+
+                                                                    // Get ready to select data from server.
+                                                                    var exceptionRet = tcsShowMonth.tick({
+
+                                                                        month: iMonth,
+                                                                        year: iYear
+                                                                    });
+                                                                    if (exceptionRet !== null) {
+
+                                                                        throw exceptionRet;
+                                                                    }
+                                                                } catch (e) {
+
+                                                                    alert(e.message);
+                                                                }
+                                                            },
+                                                            onChange: function (dateSelectedValue) {
+
+                                                                //alert(dateSelectedValue);
+                                                            },
+                                                            onDoubleClick: function () {
+
+                                                                //alert("double click");
+                                                            }
+                                                        });
+
+                                                    functionGetResults(jCanvas);
+                                                });
+
+                                            return null;
+                                        } catch (e) {
+
+                                            return e;
+                                        }
+                                    };
+
+                                    // Helper method makes transaction with the server and reports progress to user.
+                                    var functionAddLog = function (bValue) {
+
+                                        try {
+
+                                            // There can be only one!
+                                            bVoted = true;
+
+                                            var exceptionRet = sql.execute("INSERT INTO GoodDay.log VALUES ('" + (new Date()).formatForMySQLDate() + "', " + bValue.toString() + ")",
+                                                function (result) {
+
+                                                    try {
+                                                        // Report to the user.
+                                                        var exceptionRet = functionReport();
+                                                        if (exceptionRet !== null) {
+
+                                                            alert(exceptionRet.message);
+                                                        }
+                                                    } catch (e) {
+
+                                                        alert(e.message);
+                                                    }
+                                                },
+                                                function (strError) {
+
+                                                    alert(strError);
+                                                },
+                                                false);
+                                            if (exceptionRet !== null) {
+
+                                                alert(exceptionRet.message);
+                                            }
+
+                                            return null;
+                                        } catch (e) {
+
+                                            return e;
+                                        }
+                                    };
+
+                                    // Function wires up the mouse handlers to the DOM element.
+                                    var functionWire = function (strDOMElement,
+                                        bValue) {
+
+                                        try {
+
+                                            // Zoom in a little bit on mouse enter.
+                                            $(strDOMElement).mouseenter(function () {
+
+                                                try {
+
+                                                    $(strDOMElement).animate({
+
+                                                        "background-size": "60%"
+                                                    }, 100);
+                                                } catch (e) {
+
+                                                    alert(e.message);
+                                                }
+                                            });
+                                            // Zoom out a little bit on mouse leave.
+                                            $(strDOMElement).mouseleave(function () {
+
+                                                try {
+
+                                                    $(strDOMElement).animate({
+
+                                                        "background-size": "50%"
+                                                    }, 100);
+
+                                                    // Reset.
+                                                    strDown = null;
+                                                } catch (e) {
+
+                                                    alert(e.message);
+                                                }
+                                            });
+                                            // Zoom in a little bit on mouse down.
+                                            $(strDOMElement).mousedown(function () {
+
+                                                try {
+
+                                                    $(strDOMElement).animate({
+
+                                                        "background-size": "63%"
+                                                    }, 100);
+
+                                                    // Set.
+                                                    strDown = strDOMElement;
+                                                } catch (e) {
+
+                                                    alert(e.message);
+                                                }
+                                            });
+                                            // Zoom out a little bit on mouse up.
+                                            $(strDOMElement).mouseup(function () {
+
+                                                try {
+
+                                                    $(strDOMElement).animate({
+
+                                                        "background-size": "60%"
+                                                    }, 100);
+
+                                                    // Add a vote to the server.
+                                                    if (strDown === strDOMElement &&
+                                                        !bVoted) {
+
+                                                        var exceptionRet = functionAddLog(bValue);
+                                                        if (exceptionRet !== null) {
+
+                                                            alert(excaptionRet.message);
+                                                        }
+                                                    }
+
+                                                    // Reset.
+                                                    strDown = null;
+                                                } catch (e) {
+
+                                                    alert(e.message);
+                                                }
+                                            });
+
+                                            return null;
+                                        } catch (e) {
+
+                                            return e;
+                                        }
+                                    };
+
+                                    var functionRun = function () {
+                                
+                                        try {
+                                
+                                            // Wire up the buttons.
+                                            var exceptionRet = functionWire("#bad",
+                                                false);
+                                            if (exceptionRet !== null) {
+                                
+                                                alert(exceptionRet.message);
+                                            }
+                                            exceptionRet = functionWire("#good",
+                                                true);
+                                            if (exceptionRet !== null) {
+                                
+                                                alert(exceptionRet.message);
+                                            }
+
+                                            return null;
+                                        } catch (e) {
+                                
+                                            return e;
+                                        }
+                                    };
+                                
+                                    // Run the app.
+                                    var exceptionRet = functionRun();
+                                    if (exceptionRet !== null) {
+                                
+                                        alert(exceptionRet.message);
+                                    }
+    
+                                } catch (e) {
+
+                                    alert(e.message);
+                                }
+                            });
+                    });
+            });
+
+    </script>
+</head>
+<body>
+    <H1>good day</H1>
+    <div id="container">
+        <div id="good">
+        </div>
+        <div id="bad">
+        </div>
+    </div>
+</body>
+</html>

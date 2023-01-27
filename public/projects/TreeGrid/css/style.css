@@ -1,0 +1,15 @@
+﻿#CatOutput
+{
+    position:absolute;
+    left:4px;
+    top:4px;
+    right:4px;
+    bottom:4px;
+    background:#FFF;
+}
+
+body
+{
+    background:#888;
+}
+

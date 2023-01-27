@@ -1,0 +1,13 @@
+﻿#DashboardDiv {
+
+    position:absolute;
+    left:20px;
+    top:20px;
+    height:0px;
+    right:20px;
+    background:#DDF;
+    padding:0px;
+    overflow:hidden;
+    border: 1px solid white;
+    border-radius:4px;
+}

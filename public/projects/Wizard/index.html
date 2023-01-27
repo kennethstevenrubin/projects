@@ -1,0 +1,57 @@
+<!DOCTYPE html />
+<html lang="en">
+<head>
+    <meta 
+        charset="utf-8" />
+    <meta 
+        http-equiv="X-UA-Compatible" 
+        content="IE=edge,chrome=1" />
+    <meta 
+        name="viewport" 
+        content="width=device-width, initial-scale=1" />
+
+    <title>Wizard Test</title>
+    
+    <style>
+        body 
+        {
+            background:linear-gradient(-45deg, rgb(200,200,150), rgb(250,250,0));
+        }
+
+        #HostDiv
+        {
+            display:inline-block;
+            position:absolute;
+            background:white;
+            box-shadow:rgba(0,0,0,0.4) 4px 4px 4px;
+            left: 10px;
+            top: 10px;
+            right: 10px;
+            height: 500px;
+        }
+    </style>
+
+    <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+    <script>
+        WebFont.load({
+            
+            google: {
+                
+                families: ["Open Sans"]
+            }
+        });
+    </script>
+    <script
+        type="text/javascript" 
+        src="/MithrilLib/ajax/libs/jQuery/1.7.2/jQuery.js">
+    </script>
+    <script 
+        type="text/javascript" 
+        src="/MithrilLib/ajax/libs/require.js/1.0.8/require.min.js"
+        data-main="/projects/Wizard/requireConfig">
+    </script>
+</head>
+<body>
+    <div id="HostDiv" />
+</body>
+</html>

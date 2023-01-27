@@ -1,0 +1,18 @@
+﻿body
+{
+	background:#111;
+	color:#eef;
+	font: 20px Monospace;
+}
+#CodeArea
+{
+    position:absolute;
+    left:4px;
+    width:800px;
+    height:600px;
+    margin:30px;
+}
+:focus
+{
+    outline: 0;
+}
