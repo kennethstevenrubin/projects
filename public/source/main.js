@@ -651,7 +651,7 @@ class Main {
 
             // Define transform bits-state and function 
             // to set the transform to those bits.
-            let scale = (design ? 0.5 : 0.75);
+            let scale = (design ? 0.5 : 1.75);
             let translateX = 0;
             let translateY = 0;
             const setTransform = () => {
@@ -663,20 +663,6 @@ class Main {
                     translateX,
                     translateY);
             };
-
-            // Zoom in or out based on wheel.
-            canvas.addEventListener("wheel", (e) => {
-
-                scale += e.deltaY * -0.01;
-                if (scale < 0.1) {
-
-                    scale = 0.1;
-                } else if (scale > 10.0) {
-
-                    scale = 10.0;
-                }
-                setTransform();
-            });
 
             // Get SearchInput and wire input event.
             const inputSearch = document.getElementById("SearchInput");
@@ -734,49 +720,66 @@ class Main {
                 }
             });
 
+            // Zoom in or out based on wheel.
+            canvas.addEventListener("wheel", (e) => {
+
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                scale += e.deltaY * -0.01;
+                if (scale < 0.1) {
+
+                    scale = 0.1;
+                } else if (scale > 10.0) {
+
+                    scale = 10.0;
+                }
+                setTransform();
+            });
+
             // Pan or select based on pointer events.
             let mouseDownPoint = null;
             let originalX = 0;
             let originalY = 0;
-            let lastClickTime = null;
             canvas.addEventListener("pointerdown", (e) => {
 
-//                if (lastClickTime &&
-//                    new Date() - lastClickTime < 250) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
 
-                    // Test if press down on node.
-                    // If so, circumvent the normal
-                    // path for canvas dragging.
+                if (!e.isPrimary) {
 
-                    // Calculate the point coordinates in "node"-space.
-                    const nodeX = (e.clientX - translateX) / scale;
-                    const nodeY = (e.clientY - translateY) / scale;
+                    return;
+                }
 
-                    // Loop over all nodes.
-                    let picked = false;
-                    nodes.filter((nodeTest) => {
+                // Calculate the point coordinates in "node"-space.
+                const nodeX = (e.clientX - translateX) / scale;
+                const nodeY = (e.clientY - translateY) / scale;
 
-                        return (otherNodes.indexOf(nodeTest) === -1);
-                    }).forEach((node) => {
+                // Loop over all nodes.
+                let picked = false;
+                nodes.filter((nodeTest) => {
 
-                        if (!picked &&
-                            Math.abs((node.position.x - rootNode.position.x) - nodeX) < node.radius &&
-                            Math.abs((node.position.y - rootNode.position.y) - nodeY) < node.radius) {
+                    return (otherNodes.indexOf(nodeTest) === -1);
+                }).forEach((node) => {
 
-                            picked = true;
+                    if (!picked &&
+                        Math.abs((node.position.x - rootNode.position.x) - nodeX) < node.radius &&
+                        Math.abs((node.position.y - rootNode.position.y) - nodeY) < node.radius) {
 
-                            inputSearch.value = "^" + node.name + "$";
+                        picked = true;
 
-                            // "Select" the node as root.
-                            selectRootNode(node);
+                        inputSearch.value = "^" + node.name + "$";
 
-                            translateX = canvas.width / 2 + (design ? canvas.width / 8 : 0);
-                            translateY = canvas.height / 2;
-                            setTransform();
-                        }
-                    });
-//                }
-//                lastClickTime = new Date();
+                        // "Select" the node as root.
+                        selectRootNode(node);
+
+                        translateX = canvas.width / 2 + (design ? canvas.width / 8 : 0);
+                        translateY = canvas.height / 2;
+                        setTransform();
+                    }
+                });
 
                 mouseDownPoint = {
 
@@ -787,6 +790,15 @@ class Main {
                 originalY = translateY;
             });
             canvas.addEventListener("pointermove", (e) => {
+
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                if (!e.isPrimary) {
+
+                    return;
+                }
 
                 if (mouseDownPoint) {
 
@@ -799,9 +811,27 @@ class Main {
             });
             canvas.addEventListener("pointerup", (e) => {
 
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                
+                if (!e.isPrimary) {
+
+                    return;
+                }
+
                 mouseDownPoint = null;
             });
             canvas.addEventListener("pointerout", (e) => {
+
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                
+                if (!e.isPrimary) {
+
+                    return;
+                }
 
                 mouseDownPoint = null;
             });

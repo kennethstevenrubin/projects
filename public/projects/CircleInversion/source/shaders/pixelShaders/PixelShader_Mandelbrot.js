@@ -27,7 +27,7 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
 
                     type: "f",
                     shaderType: "float",
-                    value: 0.0
+                    value: 0.0001
                 },
                 resolution: {
 
@@ -70,14 +70,21 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
             {
                 // Get position in [0.0..1.0].
 	            vec2 vPos = (gl_FragCoord.xy / resolution.xy);
-                vPos = vec2(vPos.x / 1.0 - 1.5, vPos.y / 1.0 - 1.0);
+
+                vec2 location = vec2(-0.7475, 0.1102);
+
+                float fZoomPercent = sin(time / 1000.0) / 2.0 + 0.5;
+                
+                vec2 extent = vec2(0.0001 + 0.005 * fZoomPercent, 0.0001 + 0.005 * fZoomPercent);
+
+                vPos = vec2(location.x + (vPos.x - 0.5) * extent.x, location.y + (vPos.y - 0.5) * extent.y);
 
                 float x = 0.0;
                 float y = 0.0;
                 float iteration = 0.0;
-                float max_iteration = 20.0;
+                float max_iteration = 256.0;
 
-                for (int i = 0; i < 20; i++) 
+                for (int i = 0; i < 256; i++) 
                 {
                     if (x * x + y * y > 2.0 * 2.0)
                     {
@@ -90,11 +97,21 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                     iteration = iteration + 1.0;
                 }   
 
-                float normalizedIteration = iteration / max_iteration;
+                float normalizedIteration = 1.0 - iteration / max_iteration;
                 
-	            gl_FragColor =  vec4(1.0-normalizedIteration,
-                    1.0-normalizedIteration,
-                    1.0-normalizedIteration,
+                // Cycle the colors...slowly.
+	            float fR = sin((time + iteration) * colorfactors.x / 8.0);
+	            float fG = cos((time + iteration) * colorfactors.y / 8.0);
+	            float fB = sin((time + iteration) * colorfactors.z / 8.0);
+
+                // Normalize to get into full color space.
+	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
+                    fG / 2.0 + 0.5,
+                    fB / 2.0 + 0.5));
+
+	            gl_FragColor =  vec4(normalizedIteration * vBaseColor.x,
+                    normalizedIteration * vBaseColor.y,
+                    normalizedIteration * vBaseColor.z,
                     1.0);
             }
         `;

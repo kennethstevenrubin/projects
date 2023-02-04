@@ -54,7 +54,7 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
                     type: "v2",
                     shaderType: "vec2",
-                    value: new THREE.Vector2(0.010123,
+                    value: new THREE.Vector2(0.0010123,
                         0.100567)
                 },
                 reflectionradius: {
