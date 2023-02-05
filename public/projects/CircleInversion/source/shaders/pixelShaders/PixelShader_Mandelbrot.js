@@ -40,7 +40,7 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
             this.location = [-0.235125, 
                  0.827215];
             this.extentrange = [4.0e-5, 
-                -0.00001];
+                -0.0001];
         }
 
         // Do a little calc to generate some nice color space.
@@ -151,9 +151,9 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                 float normalizedIteration = 1.0 - iteration / max_iteration;
 
                 // Cycle the colors...slowly.
-	            float fR = sin((time + iteration) * colorfactors.x / 7.0);
-	            float fG = cos((time + iteration) * colorfactors.y / 5.0);
-	            float fB = -1.0 * sin((time + iteration) * colorfactors.z / 3.0);
+	            float fR = sin((time + iteration) * colorfactors.x / 1.0);
+	            float fG = cos((time + iteration) * colorfactors.y / 1.0);
+	            float fB = -1.0 * sin((time + iteration) * colorfactors.z / 1.0);
 
                 // Normalize to get into full color space.
 	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,

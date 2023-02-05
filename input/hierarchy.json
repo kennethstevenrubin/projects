@@ -259,10 +259,6 @@
         "children": []
       },
       {
-        "tagName": "dashboard",
-        "children": []
-      },
-      {
         "tagName": "draw plum",
         "children": []
       },
@@ -382,10 +378,6 @@
         "children": []
       },
       {
-        "tagName": "scroll region",
-        "children": []
-      },
-      {
         "tagName": "type tree",
         "children": []
       }
@@ -419,12 +411,6 @@
         "children": []
       }
     ]
-  },
-  "dashboard": {
-    "tagName": "dashboard",
-    "cardinality": 1,
-    "notes": "http://localhost/projects/Dashboard",
-    "children": []
   },
   "draw plum": {
     "tagName": "draw plum",
@@ -467,12 +453,6 @@
     "tagName": "poems",
     "cardinality": 1,
     "notes": "http://localhost/projects/Poems",
-    "children": []
-  },
-  "scroll region": {
-    "tagName": "scroll region",
-    "cardinality": 1,
-    "notes": "http://localhost/projects/ScrollRegion",
     "children": []
   },
   "simple movie": {

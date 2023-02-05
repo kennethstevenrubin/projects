@@ -2,5 +2,3 @@ projects to work on:
  good day
  world
  top secret
- scroll region
- dashboard
