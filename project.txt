@@ -5,45 +5,9 @@ projects to work on:
  scroll region
  dashboard
 
+github
+kennethstevenrubin@outlook.com
+Alba...!6
 
-Yesterday my root user account, lovemeknot285@gmail.com, was locked when I failed to log into it via the console.  Today I updated the password and can fully log in, however, I cannot access certain functions with the error: "you do not have sufficient permission. access denied".  I think there is some unlocking that still needs to happen to my root user.  Can you please clear all limits on the account?   Thanks.
-
-=========================================
-New values:
-
-
-Account id?: 781737311504 || kenrubinprojects
-
-root user email: kenrubinprojects@gmail.com
-password: Alba...!2
-
-api_user:
-Access Key ID:
-AKIA3MAZMXUICQUBXBWK
-Secret Access Key:
-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
-Console login link:
-https://781737311504.signin.aws.amazon.com/console
-
-=========================================
-Old values:
-AWS connection info:
-root user email: lovemeknot285@gmail.com
-password: Alba...!2
-
-root user access key:
-Access Key ID:
-AKIAU2LMVQF4Q7WNDAMD
-Secret Access Key:
-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
-
-I am users:
-Fred - programatic access - admin
-Access key id:
-AKIAU2LMVQF47IMSXFHW
-Secret access key:
-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
-
-Sally - interactive login - admin
-password: Alba...!1
-login link: https://331477254521.signin.aws.amazon.com/console
+access token (expires 20230227)
+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

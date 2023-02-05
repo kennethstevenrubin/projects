@@ -71,13 +71,15 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                 // Get position in [0.0..1.0].
 	            vec2 vPos = (gl_FragCoord.xy / resolution.xy);
 
-                vec2 location = vec2(-0.7475, 0.1102);
+                float fTimeFactor = 1000.0;
+                float fZoomPercent = cos(time / fTimeFactor) / 2.0 + 0.5;
 
-                float fZoomPercent = sin(time / 1000.0) / 2.0 + 0.5;
-                
-                vec2 extent = vec2(0.0001 + 0.005 * fZoomPercent, 0.0001 + 0.005 * fZoomPercent);
+                vec2 location = vec2(-0.7473, 0.1103);
 
-                vPos = vec2(location.x + (vPos.x - 0.5) * extent.x, location.y + (vPos.y - 0.5) * extent.y);
+                float extent = 0.0001 + 0.001 * fZoomPercent;
+
+                vPos = vec2(location.x + (vPos.x - 0.5) * extent, 
+                    location.y + (vPos.y - 0.5) * extent);
 
                 float x = 0.0;
                 float y = 0.0;
@@ -100,9 +102,9 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                 float normalizedIteration = 1.0 - iteration / max_iteration;
                 
                 // Cycle the colors...slowly.
-	            float fR = sin((time + iteration) * colorfactors.x / 8.0);
-	            float fG = cos((time + iteration) * colorfactors.y / 8.0);
-	            float fB = sin((time + iteration) * colorfactors.z / 8.0);
+	            float fR = sin((time + iteration) * colorfactors.x / 7.0);
+	            float fG = cos((time + iteration) * colorfactors.y / 5.0);
+	            float fB = -1.0 * sin((time + iteration) * colorfactors.z / 3.0);
 
                 // Normalize to get into full color space.
 	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
