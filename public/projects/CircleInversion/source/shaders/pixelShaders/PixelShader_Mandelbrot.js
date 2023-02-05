@@ -8,6 +8,49 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
     constructor(speedFactor) {
 
         super(speedFactor);
+
+        // Pick a random location and extent.
+        const seed = Math.floor(Math.random() * 4.0);
+        if (seed === 0) {
+
+            this.location = [-0.7473, 
+                0.1103];
+            this.extentrange = [0.0001, 
+                0.001];
+        } else if (seed === 1) {
+
+            this.location = [-0.74529, 
+                 0.113075];
+            this.extentrange = [0.0001, 
+                -0.00001];
+        } else if (seed === 2) {
+
+            this.location = [-1.25065, 
+                 0.02];
+            this.extentrange = [1.7e-4, 
+                -0.0001];
+        } else if (seed === 3) {
+
+            this.location = [-0.235125, 
+                 0.827215];
+            this.extentrange = [4.0e-5, 
+                -0.00001];
+        } else if (seed === 4) {
+
+            this.location = [-0.235125, 
+                 0.827215];
+            this.extentrange = [4.0e-5, 
+                -0.00001];
+        }
+
+        // Do a little calc to generate some nice color space.
+        const r = Math.random();
+        const g = Math.random();
+        const b = Math.random();
+        const magnitude = Math.sqrt(Math.pow(r, 2.0) + Math.pow(g, 2.0) + Math.pow(b, 2.0));
+        this.red = r / magnitude;
+        this.green = g / magnitude;
+        this.blue = b / magnitude;
     }
 
     updateUniforms() {
@@ -36,20 +79,27 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                     value: new THREE.Vector2(window.innerWidth,
                         window.innerHeight)
                 },
-                scale: {
+                location: {
 
                     type: "v2",
                     shaderType: "vec2",
-                    value: new THREE.Vector2(1,
-                        1)
+                    value: new THREE.Vector2(this.location[0], 
+                        this.location[1])
+                },
+                extentrange: {
+
+                    type: "v2",
+                    shaderType: "vec2",
+                    value: new THREE.Vector2(this.extentrange[0], 
+                        this.extentrange[1])
                 },
                 colorfactors: {
 
                     type: "v3",
                     shaderType: "vec3",
-                    value: new THREE.Vector3(0.7,
-                        0.3,
-                        1.0)
+                    value: new THREE.Vector3(this.red,
+                        this.green,
+                        this.blue)
                 }
             };
         }
@@ -74,9 +124,8 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                 float fTimeFactor = 1000.0;
                 float fZoomPercent = cos(time / fTimeFactor) / 2.0 + 0.5;
 
-                vec2 location = vec2(-0.7473, 0.1103);
-
-                float extent = 0.0001 + 0.001 * fZoomPercent;
+                float extent = extentrange.x + 
+                    extentrange.y * fZoomPercent;
 
                 vPos = vec2(location.x + (vPos.x - 0.5) * extent, 
                     location.y + (vPos.y - 0.5) * extent);
@@ -100,7 +149,7 @@ class PixelShader_Mandelbrot extends PixelShaderBase {
                 }   
 
                 float normalizedIteration = 1.0 - iteration / max_iteration;
-                
+
                 // Cycle the colors...slowly.
 	            float fR = sin((time + iteration) * colorfactors.x / 7.0);
 	            float fG = cos((time + iteration) * colorfactors.y / 5.0);

@@ -90,12 +90,6 @@
     "notes": "http://localhost/projects/CircleInversion?shader=CircleInversion",
     "children": []
   },
-  "mandlebrot": {
-    "tagName": "mandlebrot",
-    "cardinality": 1,
-    "notes": "http://localhost/projects/MandelbrotExplorer",
-    "children": []
-  },
   "VonNeumann": {
     "tagName": "VonNeumann",
     "cardinality": 1,
