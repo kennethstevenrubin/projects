@@ -4,10 +4,3 @@ projects to work on:
  top secret
  scroll region
  dashboard
-
-github
-kennethstevenrubin@outlook.com
-Alba...!6
-
-access token (expires 20230227)
-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
