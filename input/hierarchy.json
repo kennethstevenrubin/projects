@@ -120,6 +120,12 @@
     "notes": "http://localhost/projects/TreeFractal",
     "children": []
   },
+  "memorex": {
+    "tagName": "memorex",
+    "cardinality": 1,
+    "notes": "http://localhost/projects/memorex",
+    "children": []
+  },
   "star box": {
     "tagName": "star box",
     "cardinality": 1,
@@ -211,6 +217,10 @@
       },
       {
         "tagName": "spike",
+        "children": []
+      },
+      {
+        "tagName": "memorex",
         "children": []
       }
     ]

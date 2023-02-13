@@ -18,7 +18,7 @@
 			    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 		    }
 	    </script>
-        <script type="x-shader/x-fragment" id="MandelbrotFragmentShader">
+        <script type="x-shader/x-fragment" id="fragmentshader">
 
 		    // Switch on high precision floats.
             #ifdef GL_ES
@@ -57,11 +57,13 @@
                 // Loop fixed number of times, keep track of hom many times it 
                 // takes before function diverges from the unit disk (times 4).
                 
-                for (int i = 0; i < 256; i++)
+                int broken = 0;
+                for (int i = 0; i < 512; i++)
                 {
                     // If outside unit disk.
                     if (fX * fX + fY * fY > 4.0) 
                     {
+                        broken = 1;
                         break;
                     }
 		
@@ -73,16 +75,24 @@
                     // Remember iteration count.
                     fColor = float(i);
                 }
-                fColor = (fColor + time / 64.0) / 64.0;
-                fColor = fColor - floor(fColor);
-                
-                float fMR = sin(time * 0.001) * 0.5 + 0.5;
-                float fMG = sin(time * 0.00037) * 0.5 + 0.5;
-                float fMB = sin(time * 0.00013) * 0.5 + 0.5;
-                gl_FragColor = vec4(fColor * fMR, fColor * fMG, fColor * fMB, 1.0);
+
+                // Cycle the colors...slowly.
+	            float fR = sin(time / 300.0 + fColor / 5.0);
+	            float fG = cos(time / 400.0 + fColor / 4.0);
+	            float fB = -1.0 * sin(time / 500.0 + fColor / 3.0);
+
+                // Normalize to get into full color space.
+	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
+                    fG / 2.0 + 0.5,
+                    fB / 2.0 + 0.5));
+
+                float normalizedIteration = 1.0 - fColor / 512.0;
+	            gl_FragColor =  vec4(normalizedIteration * vBaseColor.x,
+                    normalizedIteration * vBaseColor.y,
+                    normalizedIteration * vBaseColor.z,
+                    1.0);
             }
         </script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script src="js/three.min.js"></script>
         <script>
 
@@ -95,133 +105,21 @@
                 shaderMaterial = null,
                 uniforms = null,                    // "Globalize" uniforms so it may be addressed and updated.
                 startTime = new Date().getTime(),   // Remember start time.
-                dLeft = -0.9,
-                dTop = -0.4,
-                dWidth = 0.2,
-                dHeight = 0.4,
-                dMouseDownLeft = 0,
-                dMouseDownTop = 0,
-                jDiv = null,
-                dDownClientX = 0,
-                dDownClientY = 0;
+                dLeft = -0.73,
+                dTop = -0.38,
+                dWidth = 0.07,
+                dHeight = 0.07;
 
             // Ready method invoked when the document is fully loaded.
-            $(document).ready(function () {
-
-                /* Wire mouse events.
-                $(document.body).mousedown(function (e) {
-
-                    var dPercentX = e.clientX / window.innerWidth;
-                    var dPercentY = 1 - e.clientY / window.innerHeight;
-                    dMouseDownLeft = dLeft + dPercentX * dWidth;
-                    dMouseDownTop = dTop + dPercentY * dHeight;
-
-                    dDownClientX = e.clientX;
-                    dDownClientY = e.clientY;
-                    
-                    jDiv = $("<div><div>");
-                    jDiv.css({
-                    
-                        "z-index":20,
-                        background: "yellow",
-                        opacity: 0.4,
-                        position: "absolute",
-                        display: "inline-block",
-                        left: e.clientX.toString() + "px",
-                        top: e.clientY.toString() + "px",
-                        width: "0px",
-                        height: "0px"
-                    });
-                    $(document.body).append(jDiv);
-                });
-                $(document.body).mousemove(function (e) {
-
-                    var dPercentX = e.clientX / window.innerWidth;
-                    var dPercentY = 1 - e.clientY / window.innerHeight;
-                    var dMouseLeft = dLeft + dPercentX * dWidth;
-                    var dMouseTop = dTop + dPercentY * dHeight;
-                    document.title = dMouseLeft.toFixed(3) + " " + dMouseTop.toFixed(3);
-
-                    if (jDiv) {
-                    
-                        if (e.clientX < dDownClientX) {
-
-                            jDiv.css({
-                            
-                                left: e.clientX.toString() + "px",
-                                width: Math.abs(e.clientX - dDownClientX).toString() + "px"
-                            });
-                        } else {
-                        
-                            jDiv.css({
-                            
-                                left: dDownClientX.toString() + "px",
-                                width: Math.abs(e.clientX - dDownClientX).toString() + "px"
-                            });
-                        }
-                        
-                        if (e.clientY < dDownClientY) {
-                        
-                            jDiv.css({
-                            
-                                top: e.clientY.toString() + "px",
-                                height: Math.abs(e.clientY - dDownClientY).toString() + "px"
-                            });
-                        } else {
-                        
-                            jDiv.css({
-                            
-                                top: dDownClientY.toString() + "px",
-                                height: Math.abs(e.clientY - dDownClientY).toString() + "px"
-                            });
-                        }
-                    }
-                });
-                $(document.body).mouseup(function (e) {
-
-                    $(jDiv).remove();
-                    jDiv = null;
-
-                    var dPercentX = e.clientX / window.innerWidth;
-                    var dPercentY = 1 - e.clientY / window.innerHeight;
-                    var dMouseUpLeft = dLeft + dPercentX * dWidth;
-                    var dMouseUpTop = dTop + dPercentY * dHeight;
-                    
-                    var dNewWidth = Math.abs(dMouseUpLeft - dMouseDownLeft);
-                    var dNewHeight = Math.abs(dMouseUpTop - dMouseDownTop);
-
-                    var dNewLeft = dMouseDownLeft;
-                    var dNewTop = dMouseDownTop;
-                    if (dMouseUpLeft < dNewLeft) {
-                    
-                        dNewLeft = dMouseUpLeft;
-                    }
-                    if (dMouseUpTop < dNewTop) {
-                    
-                        dNewTop = dMouseUpTop;
-                    }
-                    
-                    dLeft = dNewLeft;
-                    dTop = dNewTop;
-                    dWidth = dNewWidth;
-                    dHeight = dNewHeight;
-                    
-                    uniforms.left.value = dLeft;
-                    uniforms.top.value = dTop;
-                    uniforms.width.value = dWidth;
-                    uniforms.height.value = dHeight;
-                });*/
-
-                init();                
-                animate();
+            document.addEventListener("DOMContentLoaded", (e) => {
 
                 // Sets up the scene.
-                function init() {
+                const init = () => {
 
                     // Create the scene and set the scene size.
                     scene = new THREE.Scene();
-                    var WIDTH = window.innerWidth,
-                        HEIGHT = window.innerHeight;
+                    WIDTH = window.innerWidth,
+                    HEIGHT = window.innerHeight;
 
                     // Create a renderer and add it to the DOM.
                     renderer = new THREE.WebGLRenderer({
@@ -236,19 +134,19 @@
                     camera = new THREE.PerspectiveCamera(Math.PI / 4.0,
                         WIDTH / HEIGHT,
                         0.1,
-                        200);
-                    camera.position.set(0, 1, 0);
+                        1000);
+                    camera.position.set(0, 73, 0);
                     camera.up = new THREE.Vector3(0,0,1);
                     camera.lookAt(new THREE.Vector3(0,0,0));
                     scene.add(camera);
 
                     // Create an event listener that resizes the renderer with the browser window.
                     window.addEventListener("resize",
-                        function () {
+                        () => {
 
                             // Re-extract size data.
-                            var WIDTH = window.innerWidth,
-                                HEIGHT = window.innerHeight;
+                            WIDTH = window.innerWidth;
+                            HEIGHT = window.innerHeight;
 
                             // Update the renderer and the camera.
                             renderer.setSize(WIDTH,
@@ -259,9 +157,10 @@
                             // Update the uniform so next frame is drawn with correct aspect.
                             uniforms.resolution.value = new THREE.Vector2(WIDTH,
                                 HEIGHT);
-                                
+                            
+                            // Recreate the mesh at the new geometry
                             scene.remove(mesh);
-                            var geometry = new THREE.PlaneGeometry(WIDTH/HEIGHT,
+                            geometry = new THREE.PlaneGeometry(WIDTH/HEIGHT,
                                 1,
                                 1,
                                 1);
@@ -269,6 +168,37 @@
                                 shaderMaterial);
                             mesh.rotateX(-Math.PI / 2);
                             scene.add(mesh);
+                        });
+
+                    // Allow for zooming and panning.
+                    document.addEventListener('keydown', 
+                        (event) => {
+
+                            if (event.keyCode == 37) {
+
+                                dLeft -= (dWidth / 100.0);
+                            } else if (event.keyCode == 39) {
+
+                                dLeft += (dWidth / 100.0);
+                            } else if (event.keyCode == 38) {
+
+                                dTop += (dHeight / 100.0);
+                            } else if (event.keyCode == 40) {
+
+                                dTop -= (dHeight / 100.0);
+                            } else if (event.key == "+") {
+
+                                dHeight *= (0.99);
+                                dWidth *= (0.99);
+                                dTop += (dHeight / 100.0)
+                                dLeft += (dWidth / 100.0)
+                            } else if (event.key == "-") {
+
+                                dHeight /= (0.99);
+                                dWidth /= (0.99);
+                                dTop -= (dHeight / 100.0)
+                                dLeft -= (dWidth / 100.0)
+                            }
                         });
 
                     // Define simple plane geometry upon which to display the fractal.
@@ -317,8 +247,8 @@
                     shaderMaterial = new THREE.ShaderMaterial({
 
                         uniforms: uniforms,
-                        vertexShader: $('#vertexshader').text(),
-                        fragmentShader: $('#MandelbrotFragmentShader').text()
+                        vertexShader: document.getElementById('vertexshader').innerText,
+                        fragmentShader: document.getElementById('fragmentshader').innerText
                     });
 
                     // Allocate the mesh which is added to the scene.
@@ -326,21 +256,27 @@
                         shaderMaterial);
                     mesh.rotateX(-Math.PI / 2);
                     scene.add(mesh);
-                }
+                };
 
                 // Renders the scene and updates the render as needed.
-                function animate() {
+                const animate = () => {
 
                     uniforms.time.value = (new Date().getTime() - startTime);
+                    uniforms.left.value = dLeft;
+                    uniforms.top.value = dTop;
+                    uniforms.width.value = dWidth;
+                    uniforms.height.value = dHeight;
 
                     // Render the scene.
                     renderer.render(scene,
                         camera);
 
                     // Schedule next frame.
-                    setTimeout(requestAnimationFrame,
-                        50,
-                        animate);                }
+                    requestAnimationFrame(animate);                
+                };
+
+                init();                
+                animate();
             });
         </script>
     </head>

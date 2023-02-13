@@ -651,7 +651,7 @@ class Main {
 
             // Define transform bits-state and function 
             // to set the transform to those bits.
-            let scale = (design ? 0.5 : 1.75);
+            let scale = (design ? 0.5 : 0.75);
             let translateX = 0;
             let translateY = 0;
             const setTransform = () => {
